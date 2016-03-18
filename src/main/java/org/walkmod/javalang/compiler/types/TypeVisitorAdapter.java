@@ -18,6 +18,7 @@ package org.walkmod.javalang.compiler.types;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1091,6 +1092,7 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
 				if (param.getSymbolData() == null) {
 					param.getType().accept(this, null);
 					typeArgs[i] = (SymbolType) param.getType().getSymbolData();
+                                        System.out.println("transformParams: symbol data for " + param + " is " + param.getType() + ", " + param.getType().getSymbolData());
 					VariableDeclaratorId id = param.getId();
 					if (id != null) {
 						int arrayCount = id.getArrayCount();
@@ -1122,6 +1124,14 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
 		try {
 			SymbolType st = MethodInspector.findMethodType(symbolTable.getType("this", ReferenceType.VARIABLE),
 					typeArgs, filter, null, typeMapping);
+
+			if (st == null) {
+			    throw new NoSuchExpressionTypeException("Error locating method "+n.getName()+" with type args "+(typeArgs == null?"[]":Arrays.asList(typeArgs))
+                                       +" and type params "+typeMapping
+                                       +" for parameters "+n.getParameters()
+                                       +" in current class"
+                                       ); 
+			}
 
 			SymbolType typeData = (SymbolType) n.getType().getSymbolData();
 			SymbolType methodType = typeData.clone();
