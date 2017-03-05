@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.accessibility.AccessibleContext;
+
 import org.walkmod.javalang.compiler.symbols.SymbolTable;
 import org.walkmod.javalang.compiler.symbols.SymbolType;
 import org.walkmod.javalang.exceptions.NoSuchExpressionTypeException;
@@ -83,6 +85,14 @@ public class FieldInspector {
 								}
 
 							}
+						} catch (VerifyError e) {
+							System.out.println("clazz " + clazz.getName() + " class loader: " + clazz.getClassLoader());
+							final Class<?> superclass = clazz.getSuperclass();
+							if (superclass != null) {
+								System.out.println("superclazz " + superclass.getName() + " class loader: " + superclass.getClassLoader());
+							}
+							System.out.println("AccessibleContext class loader " + AccessibleContext.class.getClassLoader());
+							throw e;
 						}
 						if (result == null && field != null) {
 							Map<String, SymbolType> typeMapping = new HashMap<String, SymbolType>();

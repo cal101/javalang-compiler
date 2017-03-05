@@ -252,7 +252,11 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
       Map<String, SymbolType> result = null;
       List<SymbolType> paramTypes = getParameterizedTypes();
       if (paramTypes != null) {
-         TypeVariable<?>[] vars = getClazz().getTypeParameters();
+         final Class<?> clazz = getClazz();
+         if (clazz == null) {
+            throw new IllegalStateException("no clazz for " + getName() + ", method " + getMethod() + ", ptypes " + getParameterizedTypes());
+         }
+         TypeVariable<?>[] vars = clazz.getTypeParameters();
          result = new HashMap<String, SymbolType>();
          for (int i = 0; i < vars.length; i++) {
             result.put(vars[i].getName(), paramTypes.get(i));
