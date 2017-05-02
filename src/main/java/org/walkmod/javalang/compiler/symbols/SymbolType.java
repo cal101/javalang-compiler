@@ -49,6 +49,8 @@ import org.walkmod.javalang.exceptions.InvalidTypeException;
 import static java.util.Arrays.asList;
 
 public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData, ConstructorSymbolData {
+    /** symbol represents the type as declared in the class without type arguments TODO: what about clone? */
+    private boolean templateType;
 
     /**
      * Marker to aid symbol resolution.
@@ -72,6 +74,10 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
     private List<SymbolType> lowerBounds = null;
 
+    /** declared parameter types */
+    private List<SymbolType> parameterTypes;
+
+    /** arguments of parameterized type */
     private List<SymbolType> parameterizedTypes;
 
     private int arrayCount = 0;
@@ -172,10 +178,15 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
         this.typeVariable = typeVariable;
     }
 
+    /**
+    * This constructor either represents an unparameterized
+    * class or a rawtype so no parameterized types
+    * ({@link #getParameterizedTypes()} are set here.
+    */
     public SymbolType(Class<?> clazz) {
         this(Marker.None, clazz.getName());
+        this.templateType = !clazz.getName().equals("java.lang.Object");
         setClazz(clazz);
-        setParameterizedTypes(resolveGenerics(clazz));
         setArrayCount(resolveDimmensions(clazz));
     }
 
@@ -211,22 +222,22 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
     private List<SymbolType> resolveGenerics(Class<?> clazz) {
         List<SymbolType> result = null;
-        TypeVariable<?>[] typeParams = clazz.getTypeParameters();
-        if (typeParams.length > 0) {
-
-            for (TypeVariable<?> td : typeParams) {
-                Type[] bounds = td.getBounds();
+        for (TypeVariable<?> tp : clazz.getTypeParameters()) {
+            if (result == null) {
+                result = new LinkedList<SymbolType>();
+            }
+            try {
+                final Type[] bounds = tp.getBounds();
+                final List<SymbolType> boundSts = bounds.length > 0 ? new ArrayList<SymbolType>(bounds.length) : null;
                 for (Type bound : bounds) {
-                    try {
-                        SymbolType st = valueOf(bound, null);
-                        if (result == null) {
-                            result = new LinkedList<>();
-                        }
-                        result.add(st);
-                    } catch (InvalidTypeException e) {
-                        throw new RuntimeException(e);
-                    }
+                    SymbolType st = valueOf(bound, null);
+                    boundSts.add(st);
                 }
+                final SymbolType var = boundSts != null ? new SymbolType(boundSts) : new SymbolType("java.lang.Object");
+                var.setTemplateVariable(tp.getName());
+                result.add(var);
+            } catch (InvalidTypeException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -542,31 +553,101 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
         return compatibleClasses;
     }
 
+    private static class VisitWrapper {
+        private final SymbolType st;
+
+        public VisitWrapper(SymbolType symbolType) {
+            st = symbolType;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+
+            VisitWrapper that = (VisitWrapper) o;
+
+            return st == that.st;
+        }
+
+        @Override
+        public int hashCode() {
+            throw new UnsupportedOperationException("st falls back to Object.hashCode()");
+        }
+
+        public static VisitWrapper of(SymbolType symbolType) {
+            return new VisitWrapper(symbolType);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuffer result = new StringBuffer();
-        addString(result, new ArrayDeque<SymbolType>());
+        if (parameterTypes == null) {
+            final Class<?> clazz = getClazz();
+            if (clazz != null) {
+                final List<SymbolType> symbolTypes = resolveGenerics(clazz);
+                parameterTypes = symbolTypes != null
+                        ? Collections.unmodifiableList(symbolTypes)
+                        : Collections.<SymbolType>emptyList();
+            }
+        }
+        // for raw type usages created from unparameterized usages print
+        // template representation with template variables for better debug
+        // and error message experience
+        // for other rawtype usages print rawtype
+        final boolean printTemplateVariables = templateType
+                && (parameterizedTypes == null || parameterizedTypes.isEmpty()) && !parameterTypes.isEmpty();
+        addString(result, new ArrayDeque<VisitWrapper>(), printTemplateVariables, 0,
+                printTemplateVariables ? parameterTypes : parameterizedTypes);
         return result.toString();
     }
 
-    private void addString(StringBuffer result, Deque<SymbolType> visited) {
-        result.append(name);
-        if (parameterizedTypes != null && !visited.contains(this)) {
-            visited.push(this);
-            result.append("<");
-            Iterator<? extends SymbolData> it = parameterizedTypes.iterator();
-            while (it.hasNext()) {
-                SymbolType next = (SymbolType) it.next();
-                next.addString(result, visited);
-                if (it.hasNext()) {
-                    result.append(", ");
+    /**
+    * @param paramTypes parameter types or parameterized types
+    */
+    private void addString(StringBuffer result, Deque<VisitWrapper> visited, boolean printTemplateVariables, int depth,
+            final List<SymbolType> paramTypes) {
+        if (printTemplateVariables && isTemplateVariable() && depth == 1) {
+            result.append(getTemplateVariable());
+        } else {
+            result.append(name);
+        }
+        if (!visited.contains(VisitWrapper.of(this))) {
+            visited.push(VisitWrapper.of(this));
+            if (paramTypes != null && !paramTypes.isEmpty() && !(isTemplateVariable() && printTemplateVariables)) {
+                result.append("<");
+                Iterator<? extends SymbolData> it = paramTypes.iterator();
+                while (it.hasNext()) {
+                    final SymbolType pt = (SymbolType) it.next();
+                    pt.addString(result, visited, printTemplateVariables, depth + 1, pt.getParameterizedTypes());
+                    if (it.hasNext()) {
+                        result.append(", ");
+                    }
+                }
+                result.append(">");
+            }
+            for (int i = 0; i < arrayCount; i++) {
+                result.append("[]");
+            }
+            // "extends ..."
+            if (upperBounds != null && !upperBounds.isEmpty()) {
+                // to not print default "extends Object"
+                if (!(upperBounds.size() == 1 && upperBounds.get(0).getName().equals("java.lang.Object"))) {
+                    result.append(" extends ");
+                    final Iterator<SymbolType> bounds = upperBounds.iterator();
+                    while (bounds.hasNext()) {
+                        final SymbolType bound = bounds.next();
+                        bound.addString(result, visited, false, 0, bound.getParameterizedTypes());
+                        if (bounds.hasNext()) {
+                            result.append(" & ");
+                        }
+                    }
                 }
             }
-            result.append(">");
             visited.pop();
-        }
-        for (int i = 0; i < arrayCount; i++) {
-            result.append("[]");
         }
     }
 
