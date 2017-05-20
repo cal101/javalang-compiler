@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -1090,7 +1090,11 @@ public class SymbolVisitorAdapterTest extends SemanticTest {
     @Test
     public void testImplementationWithGenericsRewrittingLetters() throws Exception {
         CompilationUnit cu = run(
-                "public class A { class B <B,K,V> { B get() { return null; }} class C<K,V> extends B<C<K,V>,K, V>{} void foo() { C<String,String> c = new C<String,String>(); c.get(); } }");
+                "public class A {\n"
+                        + " class B <B,K,V> { B get() { return null; }}\n"
+                        + " class C<K,V> extends B<C<K,V>,K, V>{}\n"
+                        + " void foo() { C<String,String> c = new C<String,String>(); c.get(); }\n"
+                        + "}\n");
         MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(2);
         ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(1);
         MethodCallExpr mce = (MethodCallExpr) stmt.getExpression();

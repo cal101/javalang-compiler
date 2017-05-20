@@ -239,6 +239,7 @@ public class ASTSymbolTypeResolver extends GenericVisitorAdapter<SymbolType, Lis
 
         if (type.getTypeArgs() != null) {
             if (result == null) {
+                // TODO: reached?
                 result = new SymbolType();
             }
             List<SymbolType> typeArgs = new LinkedList<SymbolType>();
