@@ -2279,6 +2279,96 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         Assert.assertNotNull(cu);
     }
 
+    public static class AA {
+        public static class MyOuter extends Outer<StringBuilder> {
+            public class Inner2 {
+                void foo() { getOuter().length(); }
+            }
+            void foo() {
+                new Inner<Integer>() {
+                    public void usage() {
+                        getOuter().setLength(0);
+                        getInner().doubleValue();
+                    }
+                };
+            }
+        }
+    }
+
+
+    public static class Outer<T> {
+        public T getOuter() {
+            return null;
+        }
+    }
+
+
+    public static class Inner<T> {
+        public T getInner() {
+            return null;
+        }
+    }
+
+	@Test
+	public void testNestedGenericClassesWithAnonymousClass() throws Exception {
+    	String code = ""
+				+ "public class A {\n"
+				+ "  public static class MyOuter extends Outer<StringBuilder> {\n"
+				+ "   public class Inner2 {\n"
+				+ "      void foo() { getOuter().length(); }\n"
+				+ "   }\n"
+				+ "   void foo() {\n"
+				+ "    new Inner<Integer>() {\n"
+				+ "     public void usage() {\n"
+				+ "      getOuter().setLength(0);\n"
+				+ "      getInner().doubleValue();\n"
+				+ "     }\n"
+				+ "    };\n"
+				+ "   }\n"
+				+ "  }\n"
+				+ " }\n";
+		String outer = ""
+				+ "public class Outer<T> {\n"
+				+ " public T getOuter() {\n"
+				+ "  return null;\n"
+				+ " }\n"
+				+ "}\n";
+		String inner = ""
+				+ "public class Inner<T> {\n"
+				+ " public T getInner() {\n"
+				+ "  return null;\n"
+				+ " }\n"
+				+ "}\n";
+        CompilationUnit cu = run(code, outer, inner);
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .members().item(0).asClassOrInterfaceDeclaration()
+                .members().item(0).asClassOrInterfaceDeclaration()
+                .hasName("Inner2")
+                .members().item(0).asMethodDeclaration()
+                .hasName("foo")
+                .body().stmts().item(0).asExpressionStmt()
+                .expression().asMethodCallExpr()
+                .hasName("length")
+                .symbolData()
+                .hasToString("int");
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .members().item(0).asClassOrInterfaceDeclaration()
+                .members().item(1).asMethodDeclaration()
+                .hasName("foo")
+                .body().stmts().item(0).asExpressionStmt()
+                .expression().asObjectCreationExpr()
+                .anonymousClassBody().item(0).asMethodDeclaration()
+                .hasName("usage")
+                .body().stmts().item(0).asExpressionStmt()
+                .expression().asMethodCallExpr()
+                .hasName("setLength")
+                .scope()
+                .symbolData()
+                .hasToString("java.lang.StringBuilder");
+	}
+
     @Test
     public void testThisSymbolContruction() throws Exception {
         String abstractProject = "public class AbstractProject<T, K>{}";
