@@ -467,7 +467,7 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                 if (scope == null // is static import
                         || methodScope.isCompatible(scope)) { // is a method
                     // inside the CU
-                    if (MethodInspector.isGeneric(m)) {
+                    if (MethodInspector.isGeneric(m) && !isResolved(methodSymbol.getType())) {
                         // it is may return a parameterized type
                         if (scope == null) {
                             SymbolType st = symbolTable.getType("this", ReferenceType.VARIABLE);
@@ -537,6 +537,18 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
         } catch (Exception e) {
             throw new NoSuchExpressionTypeException(e);
         }
+    }
+
+    private boolean isResolved(SymbolType type) {
+        if (type == null) {
+            return false;
+        }
+        if (!type.isTemplateVariable()) {
+            return true;
+        }
+        final List<SymbolType> parameterizedTypes = type.getParameterizedTypes();
+        return parameterizedTypes != null
+                && !parameterizedTypes.isEmpty();
     }
 
     @Override
