@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -274,7 +274,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                     return aux;
                 }
                 return null;
-
             }
         }
         return parameterizedTypes;
@@ -423,7 +422,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                             }
                         }
                     }
-
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -447,9 +445,7 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                         isCompatible = Types.isCompatible(itBounds.next(), getClazz());
                     }
                 }
-
             }
-
         }
         return isCompatible;
     }
@@ -485,7 +481,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 }
                 isCompatible = found;
             }
-
         }
         return isCompatible;
     }
@@ -497,9 +492,10 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
             if (other != null) {
 
-                isCompatible = isUpperBoundsCompatible(other) && isLowerBoundsCompatible(other)
-                        && isParameterizedTypesCompatible(other) && isArrayCountCompatible(other);
-
+                isCompatible = isUpperBoundsCompatible(other)
+                        && isLowerBoundsCompatible(other)
+                        && isParameterizedTypesCompatible(other)
+                        && isArrayCountCompatible(other);
             }
 
         } else {
@@ -525,7 +521,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             } catch (ClassNotFoundException e) {
                 throw new TypeNotFoundException("Error resolving the class for " + name, e.getCause());
             }
-
         }
         return clazz;
     }
@@ -619,7 +614,7 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     }
 
     private SymbolType clone(final Marker marker, final String name, final int arrayCount, final String typeVariable,
-                             Stack<SymbolType> parent, Stack<SymbolType> created) {
+            Stack<SymbolType> parent, Stack<SymbolType> created) {
         SymbolType result = new SymbolType(marker, name);
         result.setClazz(clazz);
         result.setArrayCount(arrayCount);
@@ -687,9 +682,7 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             }
 
             valueOf(typeParam, ref, auxMap, typeMapping);
-
         }
-
     }
 
     private SymbolType getParameterizedType(String variableName, Set<SymbolType> visited) {
@@ -721,7 +714,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                             if (elem != null) {
                                 result = elem;
                             }
-
                         }
                     }
                     return result;
@@ -799,19 +791,15 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     }
 
     /**
-    * Builds a symbol type from a Java type.
-    *
-    * @param type
-    *           type to convert
-    * @param arg
-    *           reference class to take into account if the type is a generic variable.
-    * @param updatedTypeMapping
-    *           place to put the resolved generic variables.
-    * @param typeMapping
-    *           reference type mapping for generic variables.
-    * @return the representative symbol type
-    * @throws InvalidTypeException
-    */
+     * Builds a symbol type from a Java type.
+     *
+     * @param type type to convert
+     * @param arg reference class to take into account if the type is a generic variable.
+     * @param updatedTypeMapping place to put the resolved generic variables.
+     * @param typeMapping reference type mapping for generic variables.
+     * @return the representative symbol type
+     * @throws InvalidTypeException
+     */
     public static SymbolType valueOf(Type type, SymbolType arg, Map<String, SymbolType> updatedTypeMapping,
             Map<String, SymbolType> typeMapping) throws InvalidTypeException {
         if (typeMapping == null) {
@@ -831,7 +819,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             returnType = valueOfWildcardType((WildcardType) type, arg, updatedTypeMapping, typeMapping);
         }
         return returnType;
-
     }
 
     private static SymbolType valueOfClass(Class<?> type, SymbolType arg, Map<String, SymbolType> updatedTypeMapping,
@@ -858,7 +845,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 parameterizedTypes = arg.getParameterizedTypes();
                 if (parameterizedTypes != null) {
                     it = parameterizedTypes.iterator();
-
                 }
                 List<Type> implementations = ClassInspector.getInterfaceOrSuperclassImplementations(argClass, aux);
 
@@ -906,7 +892,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                         }
                     }
                 }
-
             }
             if (!isParameterizedImplementation) {
 
@@ -940,7 +925,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                         params.add(returnType);
                     }
                 }
-
             }
             if (!params.isEmpty()) {
                 returnType.setParameterizedTypes(params);
@@ -966,7 +950,8 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
                 Class<?> argClazz = arg.getClazz();
 
-                if (returnType != null && argClazz != null
+                if (returnType != null
+                        && argClazz != null
                         && argClazz.getName().equals(returnType.getClazz().getName())) {
 
                     arg = returnType;
@@ -1108,7 +1093,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                     }
 
                     params.add(st);
-
                 }
 
                 i++;
@@ -1155,7 +1139,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             if (upperBounds.isEmpty()) {
                 upperBounds = null;
             }
-
         }
         types = wt.getLowerBounds();
         if (types != null && types.length > 0) {
@@ -1166,7 +1149,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 if (st != null) {
                     lowerBounds.add(st);
                 }
-
             }
             if (lowerBounds.isEmpty()) {
                 lowerBounds = null;
@@ -1182,7 +1164,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     public static SymbolType valueOf(Type type, Map<String, SymbolType> typeMapping) throws InvalidTypeException {
 
         return valueOf(type, null, new HashMap<String, SymbolType>(), typeMapping);
-
     }
 
     public Method getMethod() {
@@ -1303,7 +1284,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             for (SymbolType bound : lowerBounds) {
                 upperBoundClasses.add(bound.getClazz());
             }
-
         }
         return upperBoundClasses;
     }
@@ -1323,7 +1303,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 aux.setParameterizedTypes(parameterizedTypes);
             } else {
                 aux = this;
-
             }
             return aux;
         }

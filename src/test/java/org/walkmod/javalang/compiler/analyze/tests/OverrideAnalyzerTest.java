@@ -1,27 +1,32 @@
 /*
  * Copyright (C) 2015 Raquel Pau
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
 package org.walkmod.javalang.compiler.analyze.tests;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Test;
+
 import org.walkmod.javalang.ast.CompilationUnit;
 import org.walkmod.javalang.ast.body.BodyDeclaration;
 import org.walkmod.javalang.ast.body.ClassOrInterfaceDeclaration;
 import org.walkmod.javalang.ast.body.MethodDeclaration;
 import org.walkmod.javalang.ast.body.TypeDeclaration;
 import org.walkmod.javalang.ast.stmt.TypeDeclarationStmt;
-import org.walkmod.javalang.test.SemanticTest;
 import org.walkmod.javalang.compiler.analyze.OverrideAnalyzer;
 
 import java.lang.reflect.Method;
@@ -29,8 +34,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import org.walkmod.javalang.test.SemanticTest;
 
 import static java.util.Arrays.asList;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -111,10 +118,12 @@ public class OverrideAnalyzerTest extends SemanticTest {
     public void testOverrideWithGenerics() throws Exception {
 
         String fooCode = "import java.util.List; public class Foo implements Bar<List>{ "
-                + "public void doSomething(List l){}" + " }";
+                + "public void doSomething(List l){}"
+                + " }";
 
         String barCode = "import java.util.Collection; public interface Bar<T extends Collection>{ "
-                + "public void doSomething(T c);" + " }";
+                + "public void doSomething(T c);"
+                + " }";
 
         CompilationUnit cu = compile(fooCode, barCode);
         final TypeDeclaration type = cu.getTypes().get(0);
@@ -128,10 +137,12 @@ public class OverrideAnalyzerTest extends SemanticTest {
     public void testOverrideWithArrays() throws Exception {
 
         String fooCode = "import java.util.List; public class Foo implements Bar<List>{ "
-                + "public void doSomething(List[] l){}" + " }";
+                + "public void doSomething(List[] l){}"
+                + " }";
 
         String barCode = "import java.util.Collection; public interface Bar<T extends Collection>{ "
-                + "public void doSomething(T[] c);" + " }";
+                + "public void doSomething(T[] c);"
+                + " }";
 
         CompilationUnit cu = compile(fooCode, barCode);
         final TypeDeclaration type = cu.getTypes().get(0);
@@ -145,10 +156,12 @@ public class OverrideAnalyzerTest extends SemanticTest {
     public void testOverrideWithArraysDimensions() throws Exception {
 
         String fooCode = "import java.util.List; public class Foo extends Bar<List>{ "
-                + "public void doSomething(List[] l){}" + " }";
+                + "public void doSomething(List[] l){}"
+                + " }";
 
         String barCode = "import java.util.Collection; public class Bar<T extends Collection>{ "
-                + "public void doSomething(T[][] c){}" + " }";
+                + "public void doSomething(T[][] c){}"
+                + " }";
 
         CompilationUnit cu = compile(fooCode, barCode);
         final TypeDeclaration type = cu.getTypes().get(0);
@@ -161,10 +174,12 @@ public class OverrideAnalyzerTest extends SemanticTest {
     public void testOverrideWithDynamicArgs() throws Exception {
 
         String fooCode = "import java.util.List; public class Foo extends Bar<List>{ "
-                + "public void doSomething(List... l){}" + " }";
+                + "public void doSomething(List... l){}"
+                + " }";
 
         String barCode = "import java.util.Collection; public class Bar<T extends Collection>{ "
-                + "public void doSomething(T... c){}" + " }";
+                + "public void doSomething(T... c){}"
+                + " }";
 
         CompilationUnit cu = compile(fooCode, barCode);
         final TypeDeclaration type = cu.getTypes().get(0);
@@ -188,7 +203,8 @@ public class OverrideAnalyzerTest extends SemanticTest {
     @Test
     public void testOverrideOnSimpleTypeDeclarationStmt() throws Exception {
         CompilationUnit cu = compile("public class Foo{ public void something() {class Bar {"
-                + "public String toString(){ return \"\"; }" + " }}}");
+                + "public String toString(){ return \"\"; }"
+                + " }}}");
 
         MethodDeclaration firstMethod = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(0);
 
@@ -255,9 +271,10 @@ public class OverrideAnalyzerTest extends SemanticTest {
     @Test
     public void testAnonymousClass() throws Exception {
 
-        CompilationUnit cu = compile(
-                "public class Foo {" + " public void bye() {}" + " abstract static class Scanner{ void hello(){} }"
-                        + " static final class DefaultScanner extends Scanner { void bye() {} } }");
+        CompilationUnit cu = compile("public class Foo {"
+                + " public void bye() {}"
+                + " abstract static class Scanner{ void hello(){} }"
+                + " static final class DefaultScanner extends Scanner { void bye() {} } }");
         final TypeDeclaration type = cu.getTypes().get(0);
         final ClassOrInterfaceDeclaration extendingClass = (ClassOrInterfaceDeclaration) type.getMembers().get(2);
         final MethodDeclaration method = (MethodDeclaration) extendingClass.getMembers().get(0);

@@ -30,13 +30,13 @@ import org.walkmod.javalang.compiler.symbols.SymbolType;
 /**
  * Experimental AssertJ alike assertions of javalang AST.
  *
- * If the experiment is successful the classes and methods
- * may be generated from AST classes.
+ * If the experiment is successful the classes and methods may be generated from AST classes.
  *
  * Subject to change without notice.
  */
 @SuppressWarnings("WeakerAccess")
 public class AstAssertions {
+
     public static CompilationUnitAssert assertThat(CompilationUnit cu) {
         return new CompilationUnitAssert(cu);
     }

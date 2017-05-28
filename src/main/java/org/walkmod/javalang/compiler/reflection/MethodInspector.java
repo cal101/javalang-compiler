@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -137,7 +137,6 @@ public class MethodInspector {
                 builder.build(aux);
             }
             result = SymbolType.valueOf(aux, typeMapping);
-
         }
 
         if (result == null) {
@@ -157,7 +156,6 @@ public class MethodInspector {
 
                         result = findMethodType(type, args, filter, builder, typeMapping, false);
                     }
-
                 }
                 if (result == null && clazz.isInterface()) {
                     result = findMethodType(Object.class, args, filter, builder, typeMapping, false);
@@ -208,7 +206,6 @@ public class MethodInspector {
                     result.add(current);
                 }
             }
-
         }
 
         return result;
@@ -231,8 +228,10 @@ public class MethodInspector {
             boolean isVisible = clazz.getName().equals(invocationClass.getName());
 
             boolean samePackage = clazz.getPackage() == null && invocationClass.getPackage() == null;
-            samePackage = samePackage || (clazz.getPackage() != null && invocationClass.getPackage() != null
-                    && clazz.getPackage().getName().equals(invocationClass.getPackage().getName()));
+            samePackage = samePackage
+                    || (clazz.getPackage() != null
+                            && invocationClass.getPackage() != null
+                            && clazz.getPackage().getName().equals(invocationClass.getPackage().getName()));
             isVisible = isVisible || Modifier.isPublic(modifiers) || (!Modifier.isPrivate(modifiers) && samePackage);
 
             if (isVisible && isDefault && !declMethods[i].isBridge() && !declMethods[i].isSynthetic()) {
@@ -272,8 +271,8 @@ public class MethodInspector {
         for (int i = 0; i < declMethods.length; i++) {
             int modifiers = declMethods[i].getModifiers();
             /*
-             * If a public, non-abstract, non-static method appears in an
-             * interface, it must be a default method.
+             * If a public, non-abstract, non-static method appears in an interface, it must be a
+             * default method.
              */
             boolean isDefault =
                     Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) && !Modifier.isAbstract(modifiers);
@@ -291,7 +290,6 @@ public class MethodInspector {
         }
 
         return result;
-
     }
 
     public static Set<Method> getVisibleMethods(Class<?> clazz, Class<?> invocationClass) {
@@ -306,8 +304,10 @@ public class MethodInspector {
             boolean isVisible = clazz.getName().equals(invocationClass.getName());
             int modifiers = declMethods[i].getModifiers();
             boolean samePackage = clazz.getPackage() == null && invocationClass.getPackage() == null;
-            samePackage = samePackage || (clazz.getPackage() != null && invocationClass.getPackage() != null
-                    && clazz.getPackage().getName().equals(invocationClass.getPackage().getName()));
+            samePackage = samePackage
+                    || (clazz.getPackage() != null
+                            && invocationClass.getPackage() != null
+                            && clazz.getPackage().getName().equals(invocationClass.getPackage().getName()));
             isVisible = isVisible || Modifier.isPublic(modifiers) || (!Modifier.isPrivate(modifiers) && samePackage);
 
             if (isVisible && !declMethods[i].isBridge() && !declMethods[i].isSynthetic()) {
@@ -373,7 +373,8 @@ public class MethodInspector {
         Method[] declMethods = clazz.getDeclaredMethods();
         for (int i = 0; i < declMethods.length; i++) {
             if (!Modifier.isPrivate(declMethods[i].getModifiers())
-                    && !Modifier.isAbstract(declMethods[i].getModifiers()) && !declMethods[i].isBridge()
+                    && !Modifier.isAbstract(declMethods[i].getModifiers())
+                    && !declMethods[i].isBridge()
                     && !declMethods[i].isSynthetic()) {
                 result.add(declMethods[i]);
                 Set<Method> auxSet = aux.get(declMethods[i].getName());
@@ -420,5 +421,4 @@ public class MethodInspector {
 
         return result;
     }
-
 }

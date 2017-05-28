@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -264,7 +264,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                     if (values != null) {
                         String type = values.get(0);
                         processJavadocTypeReference(type, tag);
-
                     }
                 } else if ("@see".equals(name)) {
                     List<String> values = tag.getValues();
@@ -272,7 +271,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                         String type = values.get(0);
                         if (type != null && !type.startsWith("<") && !type.startsWith("\"")) {
                             processJavadocTypeReference(type, tag);
-
                         }
                     }
                 }
@@ -285,7 +283,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         pushScope(n);
         super.visit(n, arg);
         symbolTable.popScope();
-
     }
 
     private void loadThisSymbol(ObjectCreationExpr n, A arg) {
@@ -304,7 +301,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 symbolTable.popScope();
             }
         }
-
     }
 
     private void loadThisSymbol(EnumConstantDeclaration n, A arg) {
@@ -337,7 +333,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             n.setSymbolData(s.getType());
             Scope scope = n.getTypeDeclaration().accept(scopeLoader, symbolTable);
             s.setInnerScope(scope);
-
         }
         super.visit(n, arg);
     }
@@ -391,7 +386,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 argsType[i] = argType;
 
                 i++;
-
             }
         } else {
             argsType = new SymbolType[0];
@@ -452,7 +446,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             }
         }
         symbolTable.popScope();
-
     }
 
     @Override
@@ -461,7 +454,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         pushScope(n);
         super.visit(n, arg);
         symbolTable.popScope();
-
     }
 
     @Override
@@ -482,7 +474,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         if (n.getClassBody() != null) {
 
             loadThisSymbol(n, arg);
-
         }
     }
 
@@ -620,7 +611,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         MultiTypeSymbol symbol = new MultiTypeSymbol(n.getId().getName(), symbolTypes, n, actions);
         symbolTable.pushSymbol(symbol);
         n.setSymbolData(new SymbolType(symbolTypes));
-
     }
 
     @Override
@@ -631,7 +621,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         if (n.getScope() != null) {
 
             scopeType = (SymbolType) n.getScope().getSymbolData();
-
         }
         SymbolType[] argsType = argsType(n.getArgs());
 
@@ -644,7 +633,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 type.accept(this, arg);
             }
         }
-
     }
 
     @Override
@@ -683,9 +671,15 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             type.accept(expressionTypeAnalyzer, arg);
             st = (SymbolType) type.getSymbolData();
             if (st == null) {
-                throw new NoSuchExpressionTypeException(
-                        "The type of " + type.toString() + "(" + type.getClass().getName() + ") at ["
-                                + type.getBeginLine() + "," + type.getBeginColumn() + "] is not found.");
+                throw new NoSuchExpressionTypeException("The type of "
+                        + type.toString()
+                        + "("
+                        + type.getClass().getName()
+                        + ") at ["
+                        + type.getBeginLine()
+                        + ","
+                        + type.getBeginColumn()
+                        + "] is not found.");
             }
         }
         List<SymbolAction> actions = null;
@@ -749,7 +743,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 e.accept(expressionTypeAnalyzer, arg);
             }
         }
-
     }
 
     @Override
@@ -798,7 +791,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             }
             n.setSymbolData(symData);
         }
-
     }
 
     @Override
@@ -897,14 +889,12 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         SymbolType[] argsType = (SymbolType[]) n.getReferencedArgsSymbolData();
 
         symbolTable.lookUpSymbolForRead(n.getIdentifier(), n, scopeType, argsType, ReferenceType.METHOD);
-
     }
 
     @Override
     public void visit(TypeParameter n, A arg) {
         super.visit(n, arg);
         symbolTable.lookUpSymbolForRead(n.getName(), null, ReferenceType.TYPE);
-
     }
 
     @Override
@@ -922,7 +912,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 aux = Object.class;
             }
             s = symbolTable.lookUpSymbolForRead(aux.getCanonicalName(), null, ReferenceType.TYPE);
-
         }
         if (n.getSymbolData() == null && s != null) {
             n.setSymbolData(s.getType());
@@ -944,7 +933,6 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             SymbolData sd = classExpr.getSymbolData();
             n.setSymbolData(sd);
         }
-
     }
 
     @Override
@@ -977,5 +965,4 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         super.visit(n, arg);
         n.accept(expressionTypeAnalyzer, arg);
     }
-
 }

@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.log4j.Logger;
+
 import org.walkmod.javalang.ast.FieldSymbolData;
 import org.walkmod.javalang.ast.Node;
 import org.walkmod.javalang.ast.SymbolData;
@@ -116,9 +117,9 @@ import org.walkmod.javalang.exceptions.NoSuchExpressionTypeException;
 import org.walkmod.javalang.visitors.VoidVisitorAdapter;
 
 /**
- * Resolve the type of a node (symbol or expression) using the symbol table.
- * See SymbolVisitorAdapter for symbol resolution.
- * The original idea is separating the type resolution from the symbol resolution. 
+ * Resolve the type of a node (symbol or expression) using the symbol table. See
+ * SymbolVisitorAdapter for symbol resolution. The original idea is separating the type resolution
+ * from the symbol resolution. 
  */
 public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisitorAdapter<A> {
 
@@ -190,7 +191,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                 } else if (sd != null) {
                     st = (SymbolType) st.merge(sd);
                 }
-
             }
             if (values != null && !values.isEmpty() && st != null) {
                 st.setArrayCount(st.getArrayCount() + 1);
@@ -241,13 +241,16 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
             }
         }
 
-        if (op.equals(Operator.equals) || op.equals(Operator.notEquals) || op.equals(Operator.greater)
-                || op.equals(Operator.greaterEquals) || op.equals(Operator.less) || op.equals(Operator.lessEquals)) {
+        if (op.equals(Operator.equals)
+                || op.equals(Operator.notEquals)
+                || op.equals(Operator.greater)
+                || op.equals(Operator.greaterEquals)
+                || op.equals(Operator.less)
+                || op.equals(Operator.lessEquals)) {
             resultType = new SymbolType(boolean.class);
         }
 
         n.setSymbolData(resultType);
-
     }
 
     public void visit(UnaryExpr n, A arg) {
@@ -300,7 +303,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
         } else {
             n.setSymbolData(thenData.merge(elseData));
         }
-
     }
 
     @Override
@@ -369,12 +371,10 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                         scopeType = new SymbolType(c);
                         symbolTable.lookUpSymbolForRead(c.getSimpleName(), null, ReferenceType.TYPE);
                         n.setSymbolData(scopeType);
-
                     }
                 } catch (ClassNotFoundException e) {
 
                 } catch (NoClassDefFoundError e) {
-
                 }
             } else {
                 SymbolType fieldType = null;
@@ -384,12 +384,10 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                     fieldType = FieldInspector.findFieldType(symbolTable, scopeType, n.getField());
                 }
                 n.setSymbolData(fieldType);
-
             }
 
         } catch (Exception e) {
             throw new NoSuchExpressionTypeException("Error evaluating a type expression in " + n.toString(), e);
-
         }
         if (semanticVisitor != null) {
             arg.put(SymbolVisitorAdapter.VISITOR_SCOPE_PROCESSOR, this);
@@ -528,7 +526,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                 SymbolDataOfMethodReferenceBuilder<A> typeBuilder =
                         new SymbolDataOfMethodReferenceBuilder<A>(typeMapping, this, arg);
                 typeBuilder.build(n);
-
             }
             if (semanticVisitor != null) {
                 n.accept(semanticVisitor, arg);
@@ -540,7 +537,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
         } catch (Exception e) {
             throw new NoSuchExpressionTypeException(e);
         }
-
     }
 
     @Override
@@ -586,14 +582,12 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
             } catch (ClassNotFoundException e) {
                 // a name expression could be "org.walkmod.A" and this node
                 // could be "org.walkmod"
-
             }
         }
         if (semanticVisitor != null) {
             n.accept(semanticVisitor, arg);
         }
         n.setSymbolData(type);
-
     }
 
     @Override
@@ -618,7 +612,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
         if (semanticVisitor != null) {
             n.accept(semanticVisitor, arg);
         }
-
     }
 
     private ArgTypes argTypes(List<Expression> args, A arg) {
@@ -761,7 +754,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
         if (semanticVisitor != null) {
             n.accept(semanticVisitor, arg);
         }
-
     }
 
     public void visit(NormalAnnotationExpr n, A arg) {
@@ -812,7 +804,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                     ctxt = previous.getRootSymbol();
                     j--;
                 }
-
             }
 
             symbolTable.pushScope();
@@ -843,7 +834,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                         }
 
                         p.setSymbolData(args[i]);
-
                     }
                     p.accept(semanticVisitor, arg);
                     i++;
@@ -892,7 +882,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                             clazz = TypesLoaderVisitor.getClassLoader().loadClass(typeName);
                         } catch (ClassNotFoundException e) {
                         } catch (NoClassDefFoundError e2) {
-
                         }
                     }
                     if (clazz == null && data != null) {
@@ -964,7 +953,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                     if (type == null) {
                         type = ASTSymbolTypeResolver.getInstance().valueOf(n);
                     }
-
                 }
             }
         }
@@ -1008,7 +996,6 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                 type.setParameterizedTypes(parameterizedTypes);
             } else {
                 type.setParameterizedTypes(null);
-
             }
             n.setSymbolData(type);
         }
@@ -1137,9 +1124,7 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                     if (param.isVarArgs()) {
                         typeArgs[i].setArrayCount(typeArgs[i].getArrayCount() + 1);
                     }
-
                 }
-
             }
         }
         return typeArgs;
@@ -1160,21 +1145,30 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
             SymbolType st = MethodInspector.findMethodType(scope, typeArgs, filter, null, typeMapping);
 
             if (st == null) {
-                throw new NoSuchExpressionTypeException("Error locating method " + n.getName() + " with type args "
-                        + (typeArgs == null ? "[]" : Arrays.asList(typeArgs)) + " and type params " + typeMapping
-                        + " for parameters " + n.getParameters() + " in current class scope "
-                        + scope
-                );
+                throw new NoSuchExpressionTypeException("Error locating method "
+                        + n.getName()
+                        + " with type args "
+                        + (typeArgs == null ? "[]" : Arrays.asList(typeArgs))
+                        + " and type params "
+                        + typeMapping
+                        + " for parameters "
+                        + n.getParameters()
+                        + " in current class scope "
+                        + scope);
             }
             SymbolType typeData = (SymbolType) n.getType().getSymbolData();
             SymbolType methodType = typeData.clone();
             methodType.setMethod(st.getMethod());
             n.setSymbolData(methodType);
         } catch (Exception e) {
-            throw new NoSuchExpressionTypeException("Error resolving the signature of the method " + n.getName()
-                    + " at [" + n.getBeginLine() + ", " + n.getBeginColumn() + "]", e);
+            throw new NoSuchExpressionTypeException("Error resolving the signature of the method "
+                    + n.getName()
+                    + " at ["
+                    + n.getBeginLine()
+                    + ", "
+                    + n.getBeginColumn()
+                    + "]", e);
         }
-
     }
 
     @Override
@@ -1211,6 +1205,7 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
     }
 
     private static class ArgTypes {
+
         private final SymbolType[] symbolTypes;
         private final boolean hasFunctionalExpressions;
 

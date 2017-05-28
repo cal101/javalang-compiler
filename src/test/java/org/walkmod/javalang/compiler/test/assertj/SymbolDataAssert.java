@@ -7,6 +7,7 @@ import org.assertj.core.api.AbstractIntegerAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.internal.Objects;
+
 import org.walkmod.javalang.ast.FieldSymbolData;
 import org.walkmod.javalang.ast.MethodSymbolData;
 import org.walkmod.javalang.ast.SymbolData;
@@ -14,6 +15,7 @@ import org.walkmod.javalang.compiler.symbols.SymbolType;
 
 public class SymbolDataAssert<S extends SymbolDataAssert<S, A>, A extends SymbolData>
         extends AbstractObjectAssert<S, A> {
+
     SymbolDataAssert(A actual, Class<?> selfType) {
         super(actual, selfType);
     }

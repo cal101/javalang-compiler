@@ -9,6 +9,7 @@ import org.walkmod.javalang.ast.stmt.TypeDeclarationStmt;
 
 public class AbstractStatementAssert<S extends AbstractStatementAssert<S, A>, A extends Statement>
         extends AbstractNodeAssert<S, A> {
+
     AbstractStatementAssert(A actual, Class<?> selfType) {
         super(actual, selfType);
     }

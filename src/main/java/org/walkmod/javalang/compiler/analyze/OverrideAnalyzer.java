@@ -1,13 +1,5 @@
 package org.walkmod.javalang.compiler.analyze;
 
-import org.walkmod.javalang.ast.MethodSymbolData;
-import org.walkmod.javalang.ast.SymbolData;
-import org.walkmod.javalang.ast.body.MethodDeclaration;
-import org.walkmod.javalang.ast.body.ModifierSet;
-import org.walkmod.javalang.ast.body.Parameter;
-import org.walkmod.javalang.compiler.reflection.ClassInspector;
-import org.walkmod.javalang.compiler.reflection.MethodInspector;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -19,10 +11,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.walkmod.javalang.ast.MethodSymbolData;
+import org.walkmod.javalang.ast.SymbolData;
+import org.walkmod.javalang.ast.body.MethodDeclaration;
+import org.walkmod.javalang.ast.body.ModifierSet;
+import org.walkmod.javalang.ast.body.Parameter;
+import org.walkmod.javalang.compiler.reflection.ClassInspector;
+import org.walkmod.javalang.compiler.reflection.MethodInspector;
+
 /**
- *
  */
 public class OverrideAnalyzer {
+
     /** @return true if method declaration overrides or implements another method */
     public static boolean isMethodOverride(MethodDeclaration md) {
         return collectOverriddenMethods(md, null);
@@ -36,9 +36,10 @@ public class OverrideAnalyzer {
     }
 
     /**
-    * @param overriddenMethods if != null add all methods to collection otherwise return on first match
-    * @return true if method found
-    */
+     * @param overriddenMethods if != null add all methods to collection otherwise return on first
+     *        match
+     * @return true if method found
+     */
     private static boolean collectOverriddenMethods(MethodDeclaration md,
             /* Nullable */ List<Method> overriddenMethods) {
         final MethodSymbolData sdata = md.getSymbolData();

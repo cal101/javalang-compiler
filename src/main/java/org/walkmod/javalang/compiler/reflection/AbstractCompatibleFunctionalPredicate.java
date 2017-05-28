@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -104,7 +104,6 @@ public abstract class AbstractCompatibleFunctionalPredicate<T> implements Previo
                 }
             }
         }
-
     }
 
     public Map<String, SymbolType> createMapping(Class<?> classToInspect, java.lang.reflect.Type interfaceToInspect,
@@ -158,12 +157,10 @@ public abstract class AbstractCompatibleFunctionalPredicate<T> implements Previo
                 if (!Object.class.equals(clazz)) {
                     subset.put(key, st1);
                 }
-
             }
             // we override the values defined by the generics that the scope
             // gives.
             update.putAll(subset);
-
         }
 
         return update;
@@ -271,12 +268,10 @@ public abstract class AbstractCompatibleFunctionalPredicate<T> implements Previo
                             }
                         }
                     }
-
                 }
                 if (i < params.length - 1) {
                     i++;
                 }
-
             }
         }
 
@@ -308,5 +303,4 @@ public abstract class AbstractCompatibleFunctionalPredicate<T> implements Previo
             this.previousPredicate = (AbstractCompatibleArgsPredicate) pred;
         }
     }
-
 }

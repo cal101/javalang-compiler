@@ -1,24 +1,30 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
 package org.walkmod.javalang.compiler;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import java.beans.Expression;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.lang.model.SourceVersion;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.walkmod.javalang.ASTManager;
 import org.walkmod.javalang.ParseException;
 import org.walkmod.javalang.ast.CompilationUnit;
@@ -28,12 +34,8 @@ import org.walkmod.javalang.compiler.types.TypeVisitorAdapter;
 import org.walkmod.javalang.exceptions.NoSuchExpressionTypeException;
 import org.walkmod.javalang.test.SemanticTest;
 
-import javax.lang.model.SourceVersion;
-import java.beans.Expression;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class TypeVisitorAdapterTest extends SemanticTest {
 
@@ -361,8 +363,11 @@ public class TypeVisitorAdapterTest extends SemanticTest {
 
     @Test
     public void testMultipleBoundParameters() throws Exception {
-        compile("import java.io.Serializable;" + "import java.io.Closeable;" + "import java.io.IOException;"
-                + "public class A implements Closeable, Serializable {" + " private Object t;  "
+        compile("import java.io.Serializable;"
+                + "import java.io.Closeable;"
+                + "import java.io.IOException;"
+                + "public class A implements Closeable, Serializable {"
+                + " private Object t;  "
                 + " public <T extends Serializable & Closeable> T set(T a){ return a; }"
                 + " @Override public void close() throws IOException{}}");
         SymbolTable symTable = getSymbolTable();
@@ -404,18 +409,18 @@ public class TypeVisitorAdapterTest extends SemanticTest {
 
     @Test
     public void testGenericMethodOverload() throws Exception {
-        compile("import java.util.*;\n" + " public class A {\n" + "    public static void f1(Set<Integer> col) {}\n"
-                + "\n" + "    public static void f1(Collection<String> col) {}\n" + "\n"
+        compile("import java.util.*;\n"
+                + " public class A {\n"
+                + "    public static void f1(Set<Integer> col) {}\n"
+                + "\n"
+                + "    public static void f1(Collection<String> col) {}\n"
+                + "\n"
                 /*
-                + "    public static void f1usage() {\n"
-                + "        // select first\n"
-                + "        f1(new HashSet<Integer>());\n"
-                + "        // select second\n"
-                + "        f1(new ArrayList<String>());\n"
-                + "        // select second\n"
-                + "        f1(new HashSet<String>());\n"
-                + "    }\n"
-                */
+                 * + "    public static void f1usage() {\n" + "        // select first\n" +
+                 * "        f1(new HashSet<Integer>());\n" + "        // select second\n" +
+                 * "        f1(new ArrayList<String>());\n" + "        // select second\n" +
+                 * "        f1(new HashSet<String>());\n" + "    }\n"
+                 */
                 + "}");
         SymbolTable symTable = getSymbolTable();
         ASTSymbolTypeResolver.getInstance().setSymbolTable(symTable);
@@ -434,13 +439,19 @@ public class TypeVisitorAdapterTest extends SemanticTest {
     @Test
     public void testUnboundGenericMethodReturnIsNotValid() throws Exception {
         /**
-         * javalang-compiler primary concern is providing symbol/type/semantic information for valid java code.
-         * this test is different because it asserts how it fails for invalid code.
-         * If the error messages do change the test needs to be adjusted.
+         * javalang-compiler primary concern is providing symbol/type/semantic information for valid
+         * java code. this test is different because it asserts how it fails for invalid code. If
+         * the error messages do change the test needs to be adjusted.
          */
-        final String code = "" + " public class A {\n" + "    public static <T> T anyObject() {\n"
-                + "        return null;\n" + "    }" + "    public static void fs(String s) {}\n"
-                + "    public static void fi(Integer i) {}\n" + "    public static void usage() { /**/; } \n" + "}";
+        final String code = ""
+                + " public class A {\n"
+                + "    public static <T> T anyObject() {\n"
+                + "        return null;\n"
+                + "    }"
+                + "    public static void fs(String s) {}\n"
+                + "    public static void fi(Integer i) {}\n"
+                + "    public static void usage() { /**/; } \n"
+                + "}";
         final String okstring = "A.fs(\"s\")";
         final String okint = "A.fi(1)";
         final String failstring = "A.fs(anyObject())";
@@ -539,7 +550,8 @@ public class TypeVisitorAdapterTest extends SemanticTest {
     @Test
     public void testTargetInference() throws Exception {
 
-        compile("import java.util.Collections; " + "import java.util.List; "
+        compile("import java.util.Collections; "
+                + "import java.util.List; "
                 + "public class A { public static void processStringList(List<String> stringList) {}}");
         SymbolType st = new SymbolType(getClassLoader().loadClass("A"));
         SymbolTable symTable = getSymbolTable();
@@ -558,7 +570,8 @@ public class TypeVisitorAdapterTest extends SemanticTest {
     //@Test: TODO: https://docs.oracle.com/javase/tutorial/java/generics/genTypeInference.html
     public void testTargetInference2() throws Exception {
 
-        compile("import java.util.Collections; " + "import java.util.List; "
+        compile("import java.util.Collections; "
+                + "import java.util.List; "
                 + "public class A { public static void processAList(List<A> stringList) {}}");
         SymbolType st = new SymbolType(getClassLoader().loadClass("A"));
         SymbolTable symTable = getSymbolTable();
@@ -749,7 +762,6 @@ public class TypeVisitorAdapterTest extends SemanticTest {
             Assert.assertNotNull(type);
             Assert.assertEquals("A$B", type.getMethod().getParameterTypes()[0].getName());
         }
-
     }
 
     @Test
@@ -791,7 +803,8 @@ public class TypeVisitorAdapterTest extends SemanticTest {
                     "public class ComparisonProvider { public int compareByAge(Person p1, Person p2) { return p2.age -p1.age;}}";
 
             String codeBase = "public class Person{ public ComparisonProvider myComparisonProvider; int age; "
-                    + comparator + " }";
+                    + comparator
+                    + " }";
 
             String codeMain = "import java.util.Arrays; " + codeBase;
             compile(codeMain);
@@ -871,7 +884,8 @@ public class TypeVisitorAdapterTest extends SemanticTest {
     public void testMethodReferencesToConstructors2() throws Exception {
         if (SourceVersion.latestSupported().ordinal() >= 8) {
 
-            String method = "public static " + "<T, SOURCE extends Collection<T>, DEST extends Collection<T>>"
+            String method = "public static "
+                    + "<T, SOURCE extends Collection<T>, DEST extends Collection<T>>"
                     + " DEST transferElements( SOURCE sourceCollection, Supplier<DEST> collectionFactory)"
                     + " { return collectionFactory.get(); } ";
 
@@ -905,7 +919,6 @@ public class TypeVisitorAdapterTest extends SemanticTest {
             Assert.assertNotNull(methodType);
             Assert.assertEquals("get", methodType.getMethod().getName());
             Assert.assertEquals("A$Supplier", arg1.getSymbolData().getName());
-
         }
     }
 
@@ -913,7 +926,8 @@ public class TypeVisitorAdapterTest extends SemanticTest {
     public void testMethodReferencesToConstructors3() throws Exception {
         if (SourceVersion.latestSupported().ordinal() >= 8) {
 
-            String method = "public static " + "<T, SOURCE extends Collection<T>, DEST extends Collection<T>>"
+            String method = "public static "
+                    + "<T, SOURCE extends Collection<T>, DEST extends Collection<T>>"
                     + " DEST transferElements( SOURCE sourceCollection, Supplier<DEST> collectionFactory)"
                     + " { return collectionFactory.get(); } ";
 
@@ -1018,7 +1032,8 @@ public class TypeVisitorAdapterTest extends SemanticTest {
     @Test
     public void testTargetInferenceShouldFail() throws Exception {
 
-        compile("import java.util.Collections; " + "import java.util.List; "
+        compile("import java.util.Collections; "
+                + "import java.util.List; "
                 + "public class A { public static <T> void processStringList(T[] args) {}}");
         SymbolType st = new SymbolType(getClassLoader().loadClass("A"));
         SymbolTable symTable = getSymbolTable();
@@ -1036,5 +1051,4 @@ public class TypeVisitorAdapterTest extends SemanticTest {
                     .contains("Ops! The method call A.processStringList(Collections.emptyList()) is not resolved"));
         }
     }
-
 }

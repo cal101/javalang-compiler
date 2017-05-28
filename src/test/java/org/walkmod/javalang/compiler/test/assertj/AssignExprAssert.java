@@ -3,6 +3,7 @@ package org.walkmod.javalang.compiler.test.assertj;
 import org.walkmod.javalang.ast.expr.AssignExpr;
 
 public class AssignExprAssert extends AbstractExpressionAssert<AssignExprAssert, AssignExpr> {
+
     /** public for reflection */
     public AssignExprAssert(AssignExpr actual) {
         super(actual, AssignExprAssert.class);

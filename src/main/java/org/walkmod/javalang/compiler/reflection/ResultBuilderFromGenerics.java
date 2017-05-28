@@ -138,7 +138,6 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
 
                     } else {
                         genericsSymbolTable.pushSymbol(vname, ReferenceType.TYPE, parameterizedType, null);
-
                     }
 
                     java.lang.reflect.Type[] bounds = tv.getBounds();
@@ -148,7 +147,6 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
 
                             updateTypeMapping(bounds[i], genericsSymbolTable, paramBounds.get(i), genericArgs,
                                     processedTypeVariables);
-
                         }
                     }
                 }
@@ -203,7 +201,6 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
                         }
                     }
                 }
-
             }
         }
     }

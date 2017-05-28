@@ -34,5 +34,4 @@ public class GenericsBuilderFromClassParameterTypes extends AbstractGenericsBuil
 
         return obj;
     }
-
 }

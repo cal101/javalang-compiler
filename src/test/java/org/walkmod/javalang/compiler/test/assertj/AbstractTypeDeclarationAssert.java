@@ -1,6 +1,7 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.ast.body.BodyDeclaration;
 import org.walkmod.javalang.ast.body.TypeDeclaration;
 

@@ -4,6 +4,7 @@ import org.walkmod.javalang.ast.body.ConstructorDeclaration;
 
 public class ConstructorDeclarationAssert
         extends AbstractNodeAssert<ConstructorDeclarationAssert, ConstructorDeclaration> {
+
     ConstructorDeclarationAssert(ConstructorDeclaration actual) {
         super(actual, ConstructorDeclarationAssert.class);
     }

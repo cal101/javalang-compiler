@@ -11,6 +11,7 @@ import org.walkmod.javalang.ast.expr.VariableDeclarationExpr;
 
 public class AbstractExpressionAssert<S extends AbstractExpressionAssert<S, A>, A extends Expression>
         extends AbstractNodeAssert<S, A> {
+
     AbstractExpressionAssert(A actual, Class<?> selfType) {
         super(actual, selfType);
     }
@@ -53,7 +54,6 @@ public class AbstractExpressionAssert<S extends AbstractExpressionAssert<S, A>, 
     }
 
     public BinaryExprAssert asBinaryExpr() {
-        return AstAssertions.assertThat(asInstanceOf(BinaryExpr.class))
-                .as(navigationDescription("(BinaryExpr)"));
+        return AstAssertions.assertThat(asInstanceOf(BinaryExpr.class)).as(navigationDescription("(BinaryExpr)"));
     }
 }

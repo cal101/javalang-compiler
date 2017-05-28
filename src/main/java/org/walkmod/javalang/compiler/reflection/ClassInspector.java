@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -90,7 +90,7 @@ public class ClassInspector {
     }
 
     /** @return intersection of raw types of classes and all super classes and interfaces */
-	public static List<? extends Class<?> > intersectRawTypes(List<Class<?> > classes1, List<Class<?>> classes2) {
+    public static List<? extends Class<?>> intersectRawTypes(List<Class<?>> classes1, List<Class<?>> classes2) {
         // most typical case
         if (classes1.size() == 1 && classes2.size() == 1) {
             return intersectRawTypes(classes1.get(0), classes2.get(0));
@@ -104,14 +104,13 @@ public class ClassInspector {
     }
 
     /** @return intersection of raw types of classes and all super classes and interfaces */
-    public static List<? extends Class<?>> intersectRawTypes(Class<?> clazz1,
-			Class<?> clazz2) {
-		if (clazz2 == null) {
-			clazz2 = Object.class;
-		}
-		if (clazz1 == null) {
-			clazz1 = Object.class;
-		}
+    public static List<? extends Class<?>> intersectRawTypes(Class<?> clazz1, Class<?> clazz2) {
+        if (clazz2 == null) {
+            clazz2 = Object.class;
+        }
+        if (clazz1 == null) {
+            clazz1 = Object.class;
+        }
         if (clazz1.isPrimitive()) {
             clazz1 = Types.getWrapperClass(clazz1.getName());
         }
@@ -119,7 +118,7 @@ public class ClassInspector {
             clazz2 = Types.getWrapperClass(clazz2.getName());
         }
 
-		if (clazz1.equals(clazz2)) {
+        if (clazz1.equals(clazz2)) {
             return singletonList(clazz1);
         }
         if (Types.isAssignable(clazz2, clazz1)) {
@@ -131,7 +130,6 @@ public class ClassInspector {
         final Set<Class<?>> common = commonClasses(clazz1, clazz2);
         final List<Class<?>> list = list(removeSubClasses(common));
         return list.isEmpty() ? LIST_OF_OBJECT_CLASS : list;
-
     }
 
     private static Set<Class<?>> commonClasses(Class<?> clazz1, Class<?> clazz2) {
@@ -195,14 +193,13 @@ public class ClassInspector {
     @Deprecated
     public static Class<?> getTheNearestSuperClass(Class<?> clazz1, Class<?> clazz2) {
         return intersectRawTypes(clazz1, clazz2).get(0);
-	}
+    }
 
     /** @deprecated use {@link #intersectRawTypes} */
     @Deprecated
-	public static List<Class<?>> getTheNearestSuperClasses(
-			List<Class<?>> classes, List<Class<?>> otherClasses) {
+    public static List<Class<?>> getTheNearestSuperClasses(List<Class<?>> classes, List<Class<?>> otherClasses) {
         return new ArrayList<>(intersectRawTypes(classes, otherClasses));
-	}
+    }
 
     public static Class<?> findClassMember(Package pkg, String name, Class<?> clazz) {
 
@@ -247,9 +244,11 @@ public class ClassInspector {
                 }
             }
             int modifiers = innerClasses[i].getModifiers();
-            boolean validModifiers =
-                    Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers) || (!Modifier.isPrivate(modifiers)
-                            && innerClasses[i].getPackage() != null && innerClasses[i].getPackage().equals(pkg));
+            boolean validModifiers = Modifier.isPublic(modifiers)
+                    || Modifier.isProtected(modifiers)
+                    || (!Modifier.isPrivate(modifiers)
+                            && innerClasses[i].getPackage() != null
+                            && innerClasses[i].getPackage().equals(pkg));
             found = validModifiers && (uniqueName.equals(name) || simpleName.equals(name));
 
             if (found) {
@@ -399,7 +398,8 @@ public class ClassInspector {
             // class1 or if the reference and the class2 and reference are not
             // primitive (ex clazz2 = Object, clazz1 = int, ref = Integer)
 
-            if ((clazz2.isPrimitive() && clazz1.isPrimitive()) || (!clazz2.isPrimitive() && !clazz1.isPrimitive())
+            if ((clazz2.isPrimitive() && clazz1.isPrimitive())
+                    || (!clazz2.isPrimitive() && !clazz1.isPrimitive())
                     || reference == null) {
                 return (order2 <= order1);
             }
@@ -423,13 +423,18 @@ public class ClassInspector {
                 if (h1 == h2) {
                     // our priority are arrays vs non array types and classes vs
                     // interfaces
-                    isMethod2First = clazz2 != null && clazz1 != null && (clazz2.isArray() && !clazz1.isArray()
-                            || (!clazz2.isInterface() && clazz1.isInterface()));
+                    isMethod2First = clazz2 != null
+                            && clazz1 != null
+                            && (clazz2.isArray() && !clazz1.isArray()
+                                    || (!clazz2.isInterface() && clazz1.isInterface()));
                     if (!isMethod2First) {
                         // we compare if the class is assignable to reference.
                         // If so, it has priority
-                        isMethod2First = clazz2 != null && reference != null && !clazz2.isArray()
-                                && !clazz2.isPrimitive() && clazz2.isAssignableFrom(reference);
+                        isMethod2First = clazz2 != null
+                                && reference != null
+                                && !clazz2.isArray()
+                                && !clazz2.isPrimitive()
+                                && clazz2.isAssignableFrom(reference);
                     }
                 } else {
                     isMethod2First = h2 > h1;
@@ -441,5 +446,4 @@ public class ClassInspector {
 
         return isMethod2First;
     }
-
 }

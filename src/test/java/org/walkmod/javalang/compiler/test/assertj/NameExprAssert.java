@@ -2,9 +2,11 @@ package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.ast.expr.NameExpr;
 
 public class NameExprAssert extends AbstractExpressionAssert<NameExprAssert, NameExpr> {
+
     public NameExprAssert(NameExpr actual) {
         super(actual, NameExprAssert.class);
     }

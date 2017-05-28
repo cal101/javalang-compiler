@@ -1,10 +1,10 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
+import java.util.List;
+
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.ClassBasedNavigableListAssert;
 import org.assertj.core.api.ListAssert;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Helper class for navigable lists.
  */
 public class ExtListAssert<ELEMENT_ASSERT extends AbstractAssert, ELEMENT> extends ListAssert<ELEMENT> {
+
     private final ClassBasedNavigableListAssert assertion;
 
     ExtListAssert(List<?> elements, Class<ELEMENT_ASSERT> assertClass) {
