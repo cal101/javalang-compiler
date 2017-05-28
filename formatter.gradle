@@ -46,6 +46,7 @@ project.plugins.withId('com.diffplug.gradle.spotless') {
 
             // based on XML file dumped out by the Eclipse formatter
             eclipse().configFile('src/config/eclipse/formatter/java.xml')
+//            eclipseFormatFile('src/config/eclipse/formatter/java.xml')
 
             // Note: this may be slow
             removeUnusedImports()

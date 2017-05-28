@@ -2,8 +2,6 @@
 1=javax
 2=
 3=org.walkmod
-4=
-5=\#java
-6=\#javax
-7=
-5=\#
+4=\#java
+5=\#javax
+6=\#
