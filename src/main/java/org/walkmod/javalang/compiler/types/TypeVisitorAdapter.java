@@ -855,150 +855,166 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
         String typeName = n.getName();
         ClassOrInterfaceType scope = n.getScope();
 
-        SymbolType type = null;
+        final SymbolType type;
         if (scope != null) {
-            SymbolData data = scope.getSymbolData();
-            if (data == null) {
-                typeName = scope.toString() + "." + typeName;
-
-            } else {
-                typeName = data.getClazz().getCanonicalName() + "." + typeName;
-            }
-            if (n.getSymbolData() == null) {
-                // we try to look the type into the symbol table
-                Symbol<?> s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE, ReferenceType.VARIABLE);
-                if (s != null) {
-                    type = s.getType().clone();
-                } else {
-                    // if we don't find it, it is a full type name
-                    Class<?> clazz = null;
-                    if (data != null) {
-                        // it is an inner class
-                        typeName = data.getName() + "$" + n.getName();
-                    }
-
-                    if (data == null) {
-                        try {
-                            clazz = TypesLoaderVisitor.getClassLoader().loadClass(typeName);
-                        } catch (ClassNotFoundException e) {
-                        } catch (NoClassDefFoundError e2) {
-                        }
-                    }
-                    if (clazz == null && data != null) {
-                        SymbolType st = symbolTable.getType("this");
-
-                        // there is no import nor a inner class inside the CU
-                        // unit. We need to load it by reflection
-                        clazz = ClassInspector.findClassMember(st.getClazz().getPackage(), n.getName(),
-                                data.getClazz());
-                    }
-                    if (data != null && clazz == null) {
-                        type = FieldInspector.findFieldType(symbolTable, (SymbolType) data, n.getName());
-                        if (type == null) {
-                            throw new NoSuchExpressionTypeException(
-                                    "Ops! The class " + n.toString() + " can't be resolved", null);
-                        }
-                    }
-
-                    if (clazz != null) {
-                        type = new SymbolType(clazz);
-                    }
-                }
-            }
-
+            type = findSymbolTypeWithScope(n, typeName, scope, symbolTable);
         } else {
-
-            if (n.getSymbolData() == null) {
-                Symbol<?> s = null;
-                Node parentNode = n.getParentNode();
-                if (parentNode instanceof ObjectCreationExpr) {
-                    ObjectCreationExpr expr = (ObjectCreationExpr) parentNode;
-                    Expression grandParent = expr.getScope();
-                    if (grandParent != null) {
-                        Class<?> clazz = grandParent.getSymbolData().getClazz();
-                        if (clazz.isAnonymousClass()) {
-
-                            clazz = clazz.getSuperclass();
-                        }
-                        Symbol<?> parentSymbol = symbolTable.findSymbol(clazz.getCanonicalName(), ReferenceType.TYPE);
-                        if (parentSymbol != null) {
-                            Scope innerScope = parentSymbol.getInnerScope();
-                            if (innerScope != null) {
-                                symbolTable.pushScope(innerScope);
-
-                                s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE_PARAM,
-                                        ReferenceType.TYPE, ReferenceType.VARIABLE);
-
-                                symbolTable.popScope();
-                            }
-                        }
-                        if (s == null) {
-                            typeName = clazz.getName() + "$" + typeName;
-                            type = new SymbolType(typeName);
-                        }
-                    } else {
-                        s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE_PARAM, ReferenceType.TYPE,
-                                ReferenceType.VARIABLE);
-                    }
-
-                } else {
-                    s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE_PARAM, ReferenceType.TYPE,
-                            ReferenceType.VARIABLE);
-                }
-                if (s != null) {
-                    type = s.getType().clone();
-
-                } else {
-
-                    if (type == null) {
-                        type = ASTSymbolTypeResolver.getInstance().valueOf(n);
-                    }
-                }
-            }
+            type = findSymbolTypeWithoutScope(n, typeName, symbolTable);
         }
         if (type != null) {
             List<Type> args = n.getTypeArgs();
 
+            final List<SymbolType> parameterizedTypes;
             if (args != null && !args.isEmpty()) {
-                List<SymbolType> parameterizedTypes = new LinkedList<SymbolType>();
-                TypeVariable<?>[] vars = type.getClazz().getTypeParameters();
-                int idx = 0;
-                for (Type currentArg : args) {
-                    SymbolType st = (SymbolType) currentArg.getSymbolData();
-                    if (st == null) {
-                        if (currentArg.toString().equals("?")) {
-
-                            boolean found = false;
-
-                            TypeVariable<?> var = vars[idx];
-                            java.lang.reflect.Type[] bounds = var.getBounds();
-                            List<SymbolType> varTypes = new LinkedList<SymbolType>();
-                            if (bounds.length > 0) {
-                                for (int i = 0; i < bounds.length && !found; i++) {
-                                    try {
-                                        varTypes.add(SymbolType.valueOf(bounds[i], null));
-                                    } catch (InvalidTypeException e) {
-                                        throw new NoSuchExpressionTypeException(e);
-                                    }
-                                }
-                            } else {
-                                varTypes.add(new SymbolType(Object.class));
-                            }
-                            st = new SymbolType(varTypes);
-
-                            idx++;
-                        } else {
-                            st = new SymbolType(Object.class);
-                        }
-                    }
-                    parameterizedTypes.add(st);
-                }
-                type.setParameterizedTypes(parameterizedTypes);
+                parameterizedTypes = parameterizedTypes(args, type.getClazz().getTypeParameters());
             } else {
-                type.setParameterizedTypes(null);
+                parameterizedTypes = null;
             }
+            type.setParameterizedTypes(parameterizedTypes);
             n.setSymbolData(type);
         }
+    }
+
+    public static SymbolType findSymbolTypeWithoutScope(ClassOrInterfaceType n, String typeName, SymbolTable symbolTable) {
+        SymbolType type = null;
+        if (n.getSymbolData() == null) {
+            Symbol<?> s = null;
+            Node parentNode = n.getParentNode();
+            if (parentNode instanceof ObjectCreationExpr) {
+                ObjectCreationExpr expr = (ObjectCreationExpr) parentNode;
+                Expression grandParent = expr.getScope();
+                if (grandParent != null) {
+                    Class<?> clazz = grandParent.getSymbolData().getClazz();
+                    if (clazz.isAnonymousClass()) {
+
+                        clazz = clazz.getSuperclass();
+                    }
+                    Symbol<?> parentSymbol = symbolTable.findSymbol(clazz.getCanonicalName(), ReferenceType.TYPE);
+                    if (parentSymbol != null) {
+                        Scope innerScope = parentSymbol.getInnerScope();
+                        if (innerScope != null) {
+                            symbolTable.pushScope(innerScope);
+
+                            s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE_PARAM,
+                                    ReferenceType.TYPE, ReferenceType.VARIABLE);
+
+                            symbolTable.popScope();
+                        }
+                    }
+                    if (s == null) {
+                        typeName = clazz.getName() + "$" + typeName;
+                        type = new SymbolType(typeName);
+                    }
+                } else {
+                    s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE_PARAM, ReferenceType.TYPE,
+                            ReferenceType.VARIABLE);
+                }
+
+            } else {
+                s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE_PARAM, ReferenceType.TYPE,
+                        ReferenceType.VARIABLE);
+            }
+            if (s != null) {
+                type = s.getType().clone();
+
+            } else {
+
+                if (type == null) {
+                    type = ASTSymbolTypeResolver.getInstance().valueOf(n);
+                }
+            }
+        }
+        return type;
+    }
+
+    private static SymbolType findSymbolTypeWithScope(ClassOrInterfaceType n, String typeName, ClassOrInterfaceType scope, SymbolTable symbolTable) {
+        SymbolType type = null;
+        SymbolData data = scope.getSymbolData();
+        if (data == null) {
+            typeName = scope.toString() + "." + typeName;
+
+        } else {
+            typeName = data.getClazz().getCanonicalName() + "." + typeName;
+        }
+        if (n.getSymbolData() == null) {
+            // we try to look the type into the symbol table
+            Symbol<?> s = symbolTable.lookUpSymbolForRead(typeName, n, ReferenceType.TYPE, ReferenceType.VARIABLE);
+            if (s != null) {
+                type = s.getType().clone();
+            } else {
+                // if we don't find it, it is a full type name
+                Class<?> clazz = null;
+                if (data != null) {
+                    // it is an inner class
+                    typeName = data.getName() + "$" + n.getName();
+                }
+
+                if (data == null) {
+                    try {
+                        clazz = TypesLoaderVisitor.getClassLoader().loadClass(typeName);
+                    } catch (ClassNotFoundException e) {
+                    } catch (NoClassDefFoundError e2) {
+                    }
+                }
+                if (clazz == null && data != null) {
+                    SymbolType st = symbolTable.getType("this");
+
+                    // there is no import nor a inner class inside the CU
+                    // unit. We need to load it by reflection
+                    clazz = ClassInspector.findClassMember(st.getClazz().getPackage(), n.getName(),
+                            data.getClazz());
+                }
+                if (data != null && clazz == null) {
+                    type = FieldInspector.findFieldType(symbolTable, (SymbolType) data, n.getName());
+                    if (type == null) {
+                        throw new NoSuchExpressionTypeException(
+                                "Ops! The class " + n.toString() + " can't be resolved", null);
+                    }
+                }
+
+                if (clazz != null) {
+                    type = new SymbolType(clazz);
+                }
+            }
+        }
+        return type;
+    }
+
+    private static List<SymbolType> parameterizedTypes(List<Type> args, final TypeVariable<? extends Class<?>>[] typeParameters) {
+        List<SymbolType> parameterizedTypes;
+        parameterizedTypes = new LinkedList<SymbolType>();
+        int idx = 0;
+        for (Type currentArg : args) {
+            SymbolType st = (SymbolType) currentArg.getSymbolData();
+            if (st == null) {
+                if (currentArg.toString().equals("?")) {
+
+                    boolean found = false;
+
+                    TypeVariable<?> var = typeParameters[idx];
+                    java.lang.reflect.Type[] bounds = var.getBounds();
+                    List<SymbolType> varTypes = new LinkedList<SymbolType>();
+                    if (bounds.length > 0) {
+                        for (int i = 0; i < bounds.length && !found; i++) {
+                            try {
+                                varTypes.add(SymbolType.valueOf(bounds[i], null));
+                            } catch (InvalidTypeException e) {
+                                throw new NoSuchExpressionTypeException(e);
+                            }
+                        }
+                    } else {
+                        varTypes.add(new SymbolType(Object.class));
+                    }
+                    st = new SymbolType(varTypes);
+
+                    idx++;
+                } else {
+                    st = new SymbolType(Object.class);
+                }
+            }
+            parameterizedTypes.add(st);
+        }
+        return parameterizedTypes;
     }
 
     @Override
