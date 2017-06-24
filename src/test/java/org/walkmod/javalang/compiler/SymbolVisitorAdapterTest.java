@@ -56,7 +56,6 @@ import org.walkmod.javalang.ast.stmt.ExpressionStmt;
 import org.walkmod.javalang.ast.stmt.ReturnStmt;
 import org.walkmod.javalang.ast.stmt.Statement;
 import org.walkmod.javalang.ast.stmt.TryStmt;
-import org.walkmod.javalang.ast.type.ClassOrInterfaceType;
 import org.walkmod.javalang.compiler.actions.ReferencesCounterAction;
 import org.walkmod.javalang.compiler.providers.RemoveUnusedSymbolsProvider;
 import org.walkmod.javalang.compiler.symbols.SymbolAction;
@@ -65,11 +64,14 @@ import org.walkmod.javalang.compiler.symbols.SymbolVisitorAdapter;
 import org.walkmod.javalang.compiler.test.assertj.AstAssertions;
 import org.walkmod.javalang.compiler.test.assertj.BlockStmtAssert;
 import org.walkmod.javalang.compiler.test.assertj.ClassOrInterfaceDeclarationAssert;
+import org.walkmod.javalang.compiler.test.assertj.ClassOrInterfaceDeclarationAssert;
 import org.walkmod.javalang.compiler.test.assertj.ExtListAssert;
 import org.walkmod.javalang.compiler.test.assertj.FieldDeclarationAssert;
 import org.walkmod.javalang.compiler.test.assertj.MethodCallExprAssert;
+import org.walkmod.javalang.compiler.test.assertj.MethodDeclarationAssert;
 import org.walkmod.javalang.compiler.test.assertj.StatementAssert;
 import org.walkmod.javalang.compiler.test.assertj.VariableDeclarationExprAssert;
+import org.walkmod.javalang.compiler.test.assertj.SymbolDataAssert;
 import org.walkmod.javalang.test.SemanticTest;
 import org.walkmod.javalang.util.FileUtils;
 
@@ -431,25 +433,42 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testGenericClassesWithBounds() throws Exception {
-        CompilationUnit cu = run("import java.util.*;import java.io.*; "
-                + "public class Foo<A extends Map<String, Object>>"
-                + " extends LinkedList<A> implements Serializable{}");
-        ClassOrInterfaceDeclaration declaration = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
-        List<ClassOrInterfaceType> implementsList = declaration.getImplements();
-        SymbolData serializable = implementsList.get(0).getSymbolData();
-        Assert.assertNotNull(serializable);
-        Assert.assertEquals("java.io.Serializable", serializable.getName());
-        List<ClassOrInterfaceType> extendsList = declaration.getExtends();
-        SymbolData sd = extendsList.get(0).getSymbolData();
-        Assert.assertEquals(false, sd.isTemplateVariable());
-        Assert.assertEquals("java.util.LinkedList", sd.getName());
-        List<SymbolData> params = sd.getParameterizedTypes();
-        Assert.assertEquals(1, params.size());
-        Assert.assertEquals("java.util.Map", params.get(0).getName());
-        params = params.get(0).getParameterizedTypes();
-        Assert.assertEquals(2, params.size());
-        Assert.assertEquals("java.lang.String", params.get(0).getName());
-        Assert.assertEquals("java.lang.Object", params.get(1).getName());
+        CompilationUnit cu = run(""
+                + "import java.util.*;\n"
+                + "import java.io.*;\n"
+                + "public class Foo<A extends Map<String, Object>>\n"
+                + " extends LinkedList<A> implements Serializable {\n"
+                + " class A {}\n"
+                + " A a;\n"
+                + "}\n");
+        final ClassOrInterfaceDeclarationAssert classFoo = assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration();
+
+        classFoo
+                .implements_().item(0).symbolData()
+                .hasName("java.io.Serializable");
+
+        final ExtListAssert<SymbolDataAssert, SymbolData> ptypes =
+                classFoo.extends_().item(0).symbolData()
+                .isTemplateVariable(false)
+                .hasName("java.util.LinkedList")
+                .parameterizedTypes()
+                .hasSize(1)
+                .item(0)
+                .hasName("java.util.Map")
+                .parameterizedTypes()
+                .hasSize(2);
+
+        ptypes.item(0)
+                .hasName("java.lang.String");
+
+        ptypes.item(1)
+                .hasName("java.lang.Object");
+
+        classFoo.members().item(1).asFieldDeclaration()
+                .fieldsSymbolData()
+                .item(0)
+                .hasName("Foo$A");
     }
 
     @Test
@@ -858,6 +877,27 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     }
 
     @Test
+    public void testInheritedTypeOverridesImportedType() throws Exception {
+        CompilationUnit cu = run(""
+                        + "import pack.D;"
+                        + "public class A { "
+                        + " D aD;"
+                        + " public static class Inner extends Base { D innerD; }"
+                        + "}",
+                "public class Base { public static class D {} }",
+                "package pack; public class D {}");
+        assertThat(cu).types().item(0).members().item(0).asFieldDeclaration()
+                .hasSymbolName("aD")
+                .fieldsSymbolData()
+                .hasToString("[pack.D]");
+        assertThat(cu).types().item(0).members().item(1).asClassOrInterfaceDeclaration()
+                .members().item(0).asFieldDeclaration()
+                .hasSymbolName("innerD")
+                .fieldsSymbolData()
+                .hasToString("[Base$D]");
+    }
+
+    @Test
     public void errorWithArrayCopy() throws Exception {
         String method = "static <T> T[] arraysCopyOf(T[] original, int newLength) {\n";
         method += "T[] copy = null;\n";
@@ -927,12 +967,137 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testGenericsWithRewrittenTypeParams4() throws Exception {
-        String classB = "class B<K, V> { K getKey() { return null; }}";
-        String code = "import java.util.*; public class C<K extends java.io.File, V> { "
+        String classB = "class B<K, V> {\n"
+                + " K getKey() { return null; }\n"
+                + "}\n";
+        String code = ""
+                + "import java.util.*;\n"
+                + "public class C<K extends java.io.File, V> {\n"
                 + classB
-                + " class A extends B<List<K>, V> { void foo(K value){ value.getAbsolutePath().trim();}}}";
+                + " class A extends B<List<K>, V> {\n"
+                + "  void foo(K value){ value.getAbsolutePath().trim();}\n"
+                + " }\n"
+                + "}\n";
         run(code);
         Assert.assertTrue(true);
+    }
+
+    /** Maybe do some generation of tests? ... */
+    @Test
+    public void testGenericsAndInheritedSymbols() throws Exception {
+        String code = ""
+                + "import java.util.*;\n"
+                + "import java.io.File;\n"
+                + "import java.nio.file.Path;\n"
+                + "public class C<K extends File, V> {\n"
+                + " class B<K extends List> {\n"
+                + "  K getKey() { return null; }\n"
+                + "  class U {}\n"
+                + " }\n"
+                + " class A<U extends K> extends B<ArrayList<String>> {\n"
+                + "  K kf;\n"
+                + "  U uf;\n"
+                + "  void foo(K kp) {\n"
+                + "   K kv = null;\n"
+                + "   kv.getAbsolutePath().trim();\n"
+                + "   kp.getAbsolutePath().trim();\n"
+                + "   kf.getAbsolutePath().trim();\n"
+                + "   uf.getAbsolutePath().trim();\n"
+                + "  }\n"
+                + "  <K extends Path> void kfoo(K gkp) {\n"
+                + "   K gkv = null;\n"
+                + "   gkv.toFile().getAbsolutePath().trim();\n"
+                + "   gkp.toFile().getAbsolutePath().trim();\n"
+                + "  }\n"
+                + "  <U extends Path> void ufoo(U gup) {\n"
+                + "   U guv = null;\n"
+                + "   guv.toFile().getAbsolutePath().trim();\n"
+                + "   gup.toFile().getAbsolutePath().trim();\n"
+                + "  }\n"
+                + " }\n"
+                + "}\n";
+        final CompilationUnit cu = run(code);
+        final ClassOrInterfaceDeclarationAssert classA = assertThat(cu).types().item(0).asClassOrInterfaceDeclaration()
+                .members().item(1).asClassOrInterfaceDeclaration();
+        classA.typeParameters().item(0)
+                .hasName("U")
+                .typeBound().item(0).symbolData()
+                .hasToString("java.io.File");
+        classA.members().item(0).asFieldDeclaration()
+                .hasSymbolName("kf")
+                .fieldsSymbolData()
+                .hasToString("[java.io.File]");
+        classA.members().item(1).asFieldDeclaration()
+                .hasSymbolName("uf")
+                .fieldsSymbolData()
+                .hasToString("[java.io.File]");
+
+        {
+            final MethodDeclarationAssert foo = classA.members().item(2).asMethodDeclaration()
+                    .hasName("foo");
+            foo
+                    .parameters().item(0)
+                    .hasSymbolName("kp")
+                    .symbolData()
+                    .hasToString("java.io.File");
+            final ExtListAssert<StatementAssert, Statement> fooStmts = foo.body().stmts();
+            fooStmts.item(0).asExpressionStmt().expression().asVariableDeclarationExpr().type().symbolData()
+                    .hasToString("java.io.File");
+            assertFileMethodChain(fooStmts.item(1));
+            assertFileMethodChain(fooStmts.item(2));
+            assertFileMethodChain(fooStmts.item(3));
+            assertFileMethodChain(fooStmts.item(4));
+        }
+
+        {
+            final MethodDeclarationAssert kfoo = classA.members().item(3).asMethodDeclaration()
+                    .hasName("kfoo");
+            kfoo
+                    .parameters().item(0)
+                    .hasSymbolName("gkp")
+                    .symbolData()
+                    .hasToString("java.nio.file.Path");
+            final ExtListAssert<StatementAssert, Statement> gfooStmts = kfoo.body().stmts();
+            gfooStmts.item(0).asExpressionStmt().expression().asVariableDeclarationExpr().type().symbolData()
+                    .hasToString("java.nio.file.Path");
+            assertPathMethodChain(gfooStmts.item(1));
+            assertPathMethodChain(gfooStmts.item(2));
+        }
+
+        {
+            final MethodDeclarationAssert ufoo = classA.members().item(4).asMethodDeclaration()
+                    .hasName("ufoo");
+            ufoo
+                    .parameters().item(0)
+                    .hasSymbolName("gup")
+                    .symbolData()
+                    .hasToString("java.nio.file.Path");
+            final ExtListAssert<StatementAssert, Statement> gfooStmts = ufoo.body().stmts();
+            gfooStmts.item(0).asExpressionStmt().expression().asVariableDeclarationExpr().type().symbolData()
+                    .hasToString("java.nio.file.Path");
+            assertPathMethodChain(gfooStmts.item(1));
+            assertPathMethodChain(gfooStmts.item(2));
+        }
+    }
+
+    private static void assertFileMethodChain(final StatementAssert stmt) {
+        stmt.asExpressionStmt().expression().asMethodCallExpr()
+                .hasName("trim")
+                .scope().asMethodCallExpr()
+                .hasName("getAbsolutePath")
+                .scope().asNameExpr().symbolData()
+                .hasToString("java.io.File");
+    }
+
+    private static void assertPathMethodChain(final StatementAssert stmt) {
+        stmt.asExpressionStmt().expression().asMethodCallExpr()
+                .hasName("trim")
+                .scope().asMethodCallExpr()
+                .hasName("getAbsolutePath")
+                .scope().asMethodCallExpr()
+                .hasName("toFile")
+                .scope().asNameExpr().symbolData()
+                .hasToString("java.nio.file.Path");
     }
 
     @Test
@@ -2203,13 +2368,16 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testFieldTypeRedefinition() throws Exception {
         String parentClass =
                 "import java.util.Collection; public class ParentClass<T extends Collection<T>>{ T project; }";
-        String childClass =
-                "import java.util.List; public class ChildClass<P extends List<P>> extends ParentClass<P> { public void foo() { project.listIterator(); } }";
+        String childClass = ""
+                + "import java.util.List;"
+                + "public class ChildClass<P extends List<P>> extends ParentClass<P> {"
+                + " public void foo() { project.listIterator(); }"
+                + "}";
         CompilationUnit cu = run(childClass, parentClass);
-        Assert.assertNotNull(cu);
-        MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(0);
-        ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(0);
-        Assert.assertNotNull(stmt.getExpression().getSymbolData());
+        assertThat(cu)
+                .types().item(0).members().item(0).asMethodDeclaration()
+                .body().stmts().item(0).asExpressionStmt().expression().symbolData()
+                .isNotNull();
     }
 
     @Test
@@ -2299,11 +2467,12 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         String code =
                 "import java.util.List; public class TimerTrigger extends Trigger<List> { public void foo() { job.listIterator(); } }";
         CompilationUnit cu = run(code, jobClass);
-        Assert.assertNotNull(cu);
-        MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(0);
-        ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(0);
-        MethodCallExpr mce = (MethodCallExpr) stmt.getExpression();
-        Assert.assertNotNull(mce.getSymbolData());
+        assertThat(cu)
+                .types().item(0).members().item(0).asMethodDeclaration()
+                .body().stmts().item(0).asExpressionStmt()
+                .expression().asMethodCallExpr()
+                .symbolData()
+                .isNotNull();
     }
 
     @Test
@@ -2367,15 +2536,125 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     }
 
     @Test
-    public void testInnerClassUsages() throws Exception {
-        String innerClass =
-                "package bar; import static java.lang.annotation.ElementType.TYPE;import java.lang.annotation.Retention;import static java.lang.annotation.RetentionPolicy.RUNTIME;import java.lang.annotation.Target; public interface ExtensionPoint {  @Target(TYPE) @Retention(RUNTIME) @interface LegacyInstancesAreScopedToHudson {} }";
-        String code =
-                "package bar; import bar.ExtensionPoint.LegacyInstancesAreScopedToHudson; @LegacyInstancesAreScopedToHudson public abstract class CLICommand implements ExtensionPoint{}";
-        CompilationUnit cu = run(code, innerClass);
-        Assert.assertNotNull(cu);
+    public void testThatImplementedInterfaceDoesNotProvideSymbolsForMarkerAnnotations() throws Exception {
+        assertThatImplementedInterfaceDoesNotProvideSymbolsForAnnotations("@LegacyInstancesAreScopedToHudson");
+    }
 
-        Assert.assertNotNull(cu.getImports().get(0).getUsages());
+    @Test
+    public void testThatImplementedInterfaceDoesNotProvideSymbolsForNormalAnnotations() throws Exception {
+        assertThatImplementedInterfaceDoesNotProvideSymbolsForAnnotations("@LegacyInstancesAreScopedToHudson()");
+    }
+
+    @Test
+    public void testThatImplementedInterfaceDoesNotProvideSymbolsForSingleMemberAnnotations() throws Exception {
+        assertThatImplementedInterfaceDoesNotProvideSymbolsForAnnotations("@LegacyInstancesAreScopedToHudson(\"ap1\")");
+    }
+
+    private void assertThatImplementedInterfaceDoesNotProvideSymbolsForAnnotations(final String annotationReference) throws Exception {
+        String innerClass = ""
+                + "package bar;"
+                + "import static java.lang.annotation.ElementType.TYPE;"
+                + "import java.lang.annotation.Retention;"
+                + "import static java.lang.annotation.RetentionPolicy.RUNTIME;"
+                + "import java.lang.annotation.Target;"
+                + "public interface ExtensionPoint {"
+                + "  @Target(TYPE) @Retention(RUNTIME) @interface LegacyInstancesAreScopedToHudson {"
+                + "    String[] value() default \"\";"
+                + "  }"
+                + "}";
+        String code = ""
+                + "package bar;\n"
+                + "import bar.ExtensionPoint.LegacyInstancesAreScopedToHudson;\n"
+                + annotationReference + " public abstract class CLICommand implements ExtensionPoint{}\n";
+        CompilationUnit cu = run(code, innerClass);
+        assertThat(cu)
+                .types().item(0)
+                .annotations().item(0)
+                .hasName("LegacyInstancesAreScopedToHudson")
+                .symbolData().clazz()
+                .isAnnotation();
+        // the important test that the imported symbol is used
+        assertThat(cu)
+                .imports().item(0).usages()
+                .hasSize(1);
+    }
+
+
+    @Test
+    public void testThatImplementedInterfaceDoesNotProvideSymbolsForTypeParameters() throws Exception {
+        String innerClass = ""
+                + "package bar;"
+                + "public interface ExtensionPoint {"
+                + "  interface Inner {}"
+                + "}";
+        String code = ""
+                + "package bar;\n"
+                + "import bar.ExtensionPoint.Inner;\n"
+                + "public abstract class Usage<T extends Inner> implements ExtensionPoint {}\n";
+        CompilationUnit cu = run(code, innerClass);
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .typeParameters().item(0)
+                .typeBound()
+                .hasSize(1)
+                .item(0)
+                .hasName("Inner");
+        // the most important test that the imported symbol is used once
+        assertThat(cu)
+                .imports().item(0).usages()
+                .hasSize(1);
+    }
+
+    @Test
+    public void testThatImplementedInterfaceDoesNotProvideSymbolsForExtends() throws Exception {
+        String innerClass = ""
+                + "package bar;"
+                + "public interface ExtensionPoint {"
+                + "  class Inner {}"
+                + "}";
+        String code = ""
+                + "package bar;\n"
+                + "import bar.ExtensionPoint.Inner;\n"
+                + "public abstract class Usage extends Inner implements ExtensionPoint {}\n";
+        CompilationUnit cu = run(code, innerClass);
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .extends_().item(0)
+                .hasName("Inner");
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .implements_().item(0)
+                .hasName("ExtensionPoint");
+        // the most important test that the imported symbol is used once
+        assertThat(cu)
+                .imports().item(0).usages()
+                .hasSize(1);
+    }
+
+    @Test
+    public void testThatImplementedInterfaceDoesNotProvideSymbolsForImplements() throws Exception {
+        String innerClass = ""
+                + "package bar;"
+                + "public interface ExtensionPoint {"
+                + "  interface Inner {}"
+                + "}";
+        String code = ""
+                + "package bar;\n"
+                + "import bar.ExtensionPoint.Inner;\n"
+                + "public abstract class Usage implements ExtensionPoint, Inner {}\n";
+        CompilationUnit cu = run(code, innerClass);
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .implements_().item(0)
+                .hasName("ExtensionPoint");
+        assertThat(cu)
+                .types().item(0).asClassOrInterfaceDeclaration()
+                .implements_().item(1)
+                .hasName("Inner");
+        // the most important test that the imported symbol is used once
+        assertThat(cu)
+                .imports().item(0).usages()
+                .hasSize(1);
     }
 
     @Test
