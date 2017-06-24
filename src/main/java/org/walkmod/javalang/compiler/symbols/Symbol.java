@@ -25,6 +25,19 @@ import org.walkmod.javalang.ast.SymbolReference;
 
 public class Symbol<T extends Node & SymbolDefinition> {
 
+    // Ohne extra scope landen in
+    // SymbolVisitorAdapter.visit(ClassOrInterfaceDeclaration) symbole im ClassScope und aus diesem
+    // bedienen sich Annotations,TypeParameter,ImplementsUndExtends und in diesem Scope sind auch
+    // die Super-Symbole.
+    // Type-Parameter koennen sich aufeinander beziehen, Reihenfolge egal. Also ein echter Scope.
+    // Ein ClassScope könnte delegieren, wenn kein Symbol lokal:
+    // 1. local-delegieren an den Type-Parameter-Scope
+    // 2.an super und
+    // 3. an parent.
+    // Bei einer Delegation an super dürfen TYPE_PARAMS nicht herangezogen werden.
+    public static final boolean USE_TP_SCOPE = true;
+    public static final String TYPE_PARAMETERS_NAME = ".typeParameters";
+
     private final ReferenceType referenceType;
 
     private final String name;

@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.walkmod.javalang.ast.ImportDeclaration;
 import org.walkmod.javalang.ast.Node;
 import org.walkmod.javalang.ast.body.AnnotationDeclaration;
 import org.walkmod.javalang.ast.body.ClassOrInterfaceDeclaration;
@@ -109,9 +108,11 @@ public class LoadTypeDeclarationsAction extends SymbolAction {
                     if (s != null) {
                         Object location = s.getLocation();
                         if (location != null && location instanceof TypeDeclaration) {
-
+                            // open new scope because e.g. if C.A extends C.B the symbols found in C.B.
+                            // should not be added to scope of C.A
+                            symbolTable.pushScope();
                             ((TypeDeclaration) location).accept(this, null);
-
+                            symbolTable.popScope(true);
                         } else {
                             Class<?> clazz = s.getType().getClazz();
                             Set<Class<?>> innerClasses = ClassInspector.getNonPrivateClassMembers(clazz);
@@ -124,8 +125,7 @@ public class LoadTypeDeclarationsAction extends SymbolAction {
                                     if (!add) {
                                         Node oldLoc = aux.getLocation();
                                         add = (oldLoc == null
-                                                || !(oldLoc instanceof TypeDeclaration
-                                                        || oldLoc instanceof ImportDeclaration));
+                                                || !(oldLoc instanceof TypeDeclaration));
                                     }
 
                                     if (add) {

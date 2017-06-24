@@ -183,7 +183,7 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
     public void visit(NormalAnnotationExpr n, A arg) {
         String type = n.getName().toString();
         Symbol<?> s = symbolTable.lookUpSymbolForRead(type, n, ReferenceType.TYPE);
-        SymbolData sd = null;
+        SymbolData sd;
         if (s == null) {
             // it is a full name and thus, it is not imported
             sd = new SymbolType(type);
@@ -191,13 +191,16 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             sd = s.getType();
         }
         n.setSymbolData(sd);
-        super.visit(n, arg);
+        // Note: no call to super.visit because symbol is already defined above
+        if (!Symbol.USE_TP_SCOPE) {
+            super.visit(n, arg);
+        }
     }
 
     public void visit(MarkerAnnotationExpr n, A arg) {
         String type = n.getName().toString();
         Symbol<?> s = symbolTable.lookUpSymbolForRead(type, n, ReferenceType.TYPE);
-        SymbolData sd = null;
+        SymbolData sd;
         if (s == null) {
             // it is a full name and thus, it is not imported
             sd = new SymbolType(type);
@@ -205,7 +208,10 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             sd = s.getType();
         }
         n.setSymbolData(sd);
-        super.visit(n, arg);
+        // Note: no call to super.visit because symbol is already defined above
+        if (!Symbol.USE_TP_SCOPE) {
+            super.visit(n, arg);
+        }
     }
 
     public void visit(SingleMemberAnnotationExpr n, A arg) {
@@ -217,8 +223,10 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             SymbolType st = new SymbolType(typeName);
             n.setSymbolData(st);
         }
-
-        super.visit(n, arg);
+        // Note: no call to super.visit because symbol is already defined above
+        if (!Symbol.USE_TP_SCOPE) {
+            super.visit(n, arg);
+        }
     }
 
     private void processJavadocTypeReference(String type, JavadocTag n) {
@@ -316,6 +324,11 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
         symbolTable.popScope();
     }
 
+    private static Scope symbolInnerScope(Scope symbolTable, final String symbolName, final ReferenceType typeParam) {
+        final Symbol<?> symbol = symbolTable.findSymbol(symbolName, typeParam);
+        return symbol != null ? symbol.getInnerScope() : null;
+    }
+
     @Override
     public void visit(TypeDeclarationStmt n, A arg) {
         if (n.getSymbolData() == null) {
@@ -394,15 +407,18 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
     }
 
     public void pushScope(TypeDeclaration n) {
-        Symbol<?> s = symbolTable.findSymbol(n.getName(), ReferenceType.TYPE);
-        Scope scope = s.getInnerScope();
+        Scope scope = symbolInnerScope(symbolTable, n);
         symbolTable.pushScope(scope);
+    }
+
+    private static Scope symbolInnerScope(SymbolTable symbolTable, TypeDeclaration n) {
+        Symbol<?> s = symbolTable.findSymbol(n.getName(), ReferenceType.TYPE);
+        return s.getInnerScope();
     }
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, A arg) {
 
-        pushScope(n);
         //System.out.println(n.getName());
         if (n.getJavaDoc() != null) {
             n.getJavaDoc().accept(this, arg);
@@ -412,10 +428,25 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 a.accept(this, arg);
             }
         }
-        if (n.getTypeParameters() != null) {
+        if (!Symbol.USE_TP_SCOPE) {
+            pushScope(n);
+        }
+
+        final Scope typeScope = symbolInnerScope(symbolTable, n);
+        final Scope typeParametersScope;
+        if (n.getTypeParameters() != null && !n.getTypeParameters().isEmpty()) {
+            typeParametersScope = Symbol.USE_TP_SCOPE
+                    ? symbolInnerScope(typeScope, Symbol.TYPE_PARAMETERS_NAME, ReferenceType.TYPE_PARAM)
+                    : null;
+            if (typeParametersScope != null) {
+                symbolTable.pushScope(typeParametersScope);
+            }
+
             for (TypeParameter t : n.getTypeParameters()) {
                 t.accept(this, arg);
             }
+        } else {
+            typeParametersScope = null;
         }
         if (n.getExtends() != null) {
             for (ClassOrInterfaceType c : n.getExtends()) {
@@ -429,16 +460,16 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
                 if (sd != null) {
                     // Java 8 super in an interface is itself
                     Symbol<?> s = symbolTable.findSymbol(sd.getName(), ReferenceType.TYPE);
-                    if (s != null) {
-                        Scope scope = s.getInnerScope();
-                        if (scope == null) {
-                            scope = new Scope();
-                            scope.addSymbol(new Symbol("super", s.getType(), null));
-                            s.setInnerScope(scope);
-                        }
+                    if (s != null && s.getInnerScope() == null) {
+                        Scope scope = new Scope();
+                        scope.addSymbol(new Symbol("super", s.getType(), null));
+                        s.setInnerScope(scope);
                     }
                 }
             }
+        }
+        if (Symbol.USE_TP_SCOPE) {
+            symbolTable.pushScope(typeScope);
         }
         if (n.getMembers() != null) {
             for (BodyDeclaration member : n.getMembers()) {
@@ -446,6 +477,9 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             }
         }
         symbolTable.popScope();
+        if (typeParametersScope != null) {
+            symbolTable.popScope();
+        }
     }
 
     @Override
@@ -543,9 +577,18 @@ public class SymbolVisitorAdapter<A extends Map<String, Object>> extends VoidVis
             scope = new Scope(symbols.get(0));
             symbols.get(0).setInnerScope(scope);
         }
+        Scope typeParamsScope = Symbol.USE_TP_SCOPE
+                ? symbolInnerScope(scope, Symbol.TYPE_PARAMETERS_NAME, ReferenceType.TYPE_PARAM)
+                : null;
+        if (typeParamsScope != null) {
+            symbolTable.pushScope(typeParamsScope);
+        }
         symbolTable.pushScope(scope);
         super.visit(n, arg);
         symbolTable.popScope();
+        if (typeParamsScope != null) {
+            symbolTable.popScope();
+        }
     }
 
     @Override

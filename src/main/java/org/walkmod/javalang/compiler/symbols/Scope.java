@@ -27,6 +27,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.walkmod.javalang.ast.ImportDeclaration;
 import org.walkmod.javalang.ast.Node;
 import org.walkmod.javalang.ast.SymbolDefinition;
@@ -128,18 +129,35 @@ public class Scope {
             }
         }
         if (result == null) {
+            list = symbols.get(Symbol.TYPE_PARAMETERS_NAME);
+            if (list != null) {
+                Symbol<?> tpSymbol = list.get(0);
+                Scope scope = tpSymbol.getInnerScope();
+                if (scope != null) {
+                    result = scope.findSymbol(name, true, referenceType);
+                }
+            }
+        }
+        if (result == null) {
             list = symbols.get("super");
             if (list != null) {
                 Symbol<?> superSymbol = list.get(0);
                 Scope scope = superSymbol.getInnerScope();
                 if (scope != null) {
                     if (!local || superSymbol.getLocation() instanceof ClassOrInterfaceDeclaration) {
-                        result = scope.findSymbol(name, local, referenceType);
+                        // Note: type parameters are not inherited
+                        result = scope.findSymbol(name, local, withoutTypeParam(referenceType));
                     }
                 }
             }
         }
         return result;
+    }
+
+    private static ReferenceType[] withoutTypeParam(ReferenceType[] referenceType) {
+        return ArrayUtils.contains(referenceType, ReferenceType.TYPE_PARAM)
+                ? ArrayUtils.removeElement(referenceType, ReferenceType.TYPE_PARAM)
+                : referenceType;
     }
 
     public List<Symbol<?>> getSymbols(String name) {
@@ -220,7 +238,17 @@ public class Scope {
             }
         }
         if (typeParams != null) {
-            aux.putAll(typeParams);
+            if (Symbol.USE_TP_SCOPE) {
+                for (Map.Entry<String, SymbolType> e : typeParams.entrySet()) {
+                    if (Symbol.TYPE_PARAMETERS_NAME.equals(e.getKey())) {
+                        aux.putAll(findSymbol(Symbol.TYPE_PARAMETERS_NAME, ReferenceType.TYPE_PARAM).getInnerScope().getTypeParams());
+                    } else {
+                        aux.put(e.getKey(), e.getValue());
+                    }
+                }
+            } else {
+                aux.putAll(typeParams);
+            }
         }
 
         return aux;

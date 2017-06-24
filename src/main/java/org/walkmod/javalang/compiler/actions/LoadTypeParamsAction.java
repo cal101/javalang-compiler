@@ -90,7 +90,7 @@ public class LoadTypeParamsAction extends SymbolAction {
                 SymbolType superType = type.accept(res, null);
 
                 List<SymbolType> params = superType.getParameterizedTypes();
-                Map<String, SymbolType> typeMapping = table.getTypeParams();
+                final Map<String, SymbolType> typeMapping = table.getTypeParams();
                 if (params != null) {
                     Symbol<?> superSymbol = symbol.getInnerScope().findSymbol("super");
                     Scope innerScope = superSymbol.getInnerScope();
@@ -117,16 +117,31 @@ public class LoadTypeParamsAction extends SymbolAction {
 
                     // extends a parameterizable type
                     TypeVariable<?>[] tps = superType.getClazz().getTypeParameters();
-                    for (int i = 0; i < tps.length; i++) {
 
-                        table.pushSymbol(tps[i].getName(), ReferenceType.TYPE_PARAM, params.get(i), null);
+                    Symbol<? extends Node> tpSymbol = null;
+                    if (tps.length > 0) {
+                        Scope typeParametersScope = Symbol.USE_TP_SCOPE ? new Scope() : null;
+                        if (typeParametersScope != null) {
+                            table.pushScope(typeParametersScope);
+                        }
+                        for (int i = 0; i < tps.length; i++) {
+                            table.pushSymbol(tps[i].getName(), ReferenceType.TYPE_PARAM, params.get(i), null);
+                        }
+                        if (typeParametersScope != null) {
+                            table.popScope(true);
+                            tpSymbol = new Symbol<>(Symbol.TYPE_PARAMETERS_NAME, superType, superSymbol.getLocation(), ReferenceType.TYPE_PARAM);
+                            tpSymbol.setInnerScope(typeParametersScope);
+                        }
+                    }
+
+                    if (tpSymbol != null) {
+                        table.pushSymbol(tpSymbol);
                     }
                     table.popScope(true);
                 }
                 Set<String> genericLetters = typeMapping.keySet();
                 if (genericLetters != null) {
                     for (String letter : genericLetters) {
-
                         if (typeResolution.containsKey(letter)) {
                             table.pushSymbol(letter, ReferenceType.TYPE, typeMapping.get(letter), null);
                         }
@@ -138,6 +153,10 @@ public class LoadTypeParamsAction extends SymbolAction {
 
     public void load(SymbolTable table, List<TypeParameter> typeParams, SymbolType thisType) {
         if (typeParams != null && !typeParams.isEmpty()) {
+            Scope scope = Symbol.USE_TP_SCOPE ? new Scope() : null;
+            if (Symbol.USE_TP_SCOPE) {
+                table.pushScope(scope);
+            }
 
             List<SymbolType> parameterizedTypes = new LinkedList<SymbolType>();
             for (TypeParameter tp : typeParams) {
@@ -156,7 +175,14 @@ public class LoadTypeParamsAction extends SymbolAction {
                 } else {
                     st = SymbolType.typeVariableOf(tp.getName(), Object.class);
                 }
-                table.pushSymbol(tp.getName(), ReferenceType.TYPE_PARAM, st, tp);
+                final Symbol<?> symbol = table.pushSymbol(tp.getName(), ReferenceType.TYPE_PARAM, st, tp);
+                if (Symbol.USE_TP_SCOPE) {
+//                // TODO: taking one smells ... root symbol classOrTypeDecl?
+                    if (scope.getRootSymbol() == null) {
+                        scope.setRootSymbol(symbol);
+                    }
+                    symbol.setInnerScope(scope);
+                }
 
                 parameterizedTypes.add(st);
             }
@@ -169,6 +195,13 @@ public class LoadTypeParamsAction extends SymbolAction {
 
             if (thisType != null && !parameterizedTypes.isEmpty()) {
                 thisType.setParameterizedTypes(parameterizedTypes);
+            }
+            if (Symbol.USE_TP_SCOPE) {
+                table.popScope(true);
+                // TODO: Hack to store the scope in fake symbol
+                final Symbol<TypeParameter> symbol = new Symbol<>(Symbol.TYPE_PARAMETERS_NAME, thisType, typeParams.get(0), ReferenceType.TYPE_PARAM);
+                symbol.setInnerScope(scope);
+                table.pushSymbol(symbol);
             }
         }
     }
