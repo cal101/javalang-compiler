@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 
 import org.walkmod.javalang.ast.MethodSymbolData;
 
-public class MethodSymbolDataAssert extends SymbolDataAssert<MethodSymbolDataAssert, MethodSymbolData> {
+public class MethodSymbolDataAssert extends AbstractSymbolDataAssert<MethodSymbolDataAssert, MethodSymbolData> {
 
     MethodSymbolDataAssert(MethodSymbolData actual) {
         super(actual, MethodSymbolDataAssert.class);

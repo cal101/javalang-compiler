@@ -21,7 +21,7 @@ public class AbstractExpressionAssert<S extends AbstractExpressionAssert<S, A>, 
         this(actual, AbstractExpressionAssert.class);
     }
 
-    public SymbolDataAssert symbolData() {
+    public AbstractSymbolDataAssert symbolData() {
         return symbolData(actual);
     }
 

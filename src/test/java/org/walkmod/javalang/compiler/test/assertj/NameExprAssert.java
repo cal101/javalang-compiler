@@ -20,7 +20,7 @@ public class NameExprAssert extends AbstractExpressionAssert<NameExprAssert, Nam
         return Assertions.assertThat(actual.getName()).as(navigationDescription("name"));
     }
 
-    public SymbolDataAssert symbolData() {
+    public AbstractSymbolDataAssert symbolData() {
         return symbolData(actual);
     }
 }

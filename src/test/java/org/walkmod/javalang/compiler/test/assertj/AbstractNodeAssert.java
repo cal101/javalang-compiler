@@ -1,6 +1,7 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.internal.Objects;
 
 import org.walkmod.javalang.ast.Node;
@@ -33,5 +34,15 @@ class AbstractNodeAssert<S extends AbstractAssert<S, A>, A extends Node> extends
     @Deprecated
     public A asNode() {
         return actual;
+    }
+
+    protected AbstractNodeAssert<S, A> assertEqualsName(final String actual, String name) {
+        Assertions.assertThat(actual).describedAs(navigationDescription("name")).isEqualTo(name);
+        return this;
+    }
+
+    protected AbstractNodeAssert<S, A> assertEqualsSymbolName(final String actual, String name) {
+        Assertions.assertThat(actual).describedAs(navigationDescription("symbolName")).isEqualTo(name);
+        return this;
     }
 }

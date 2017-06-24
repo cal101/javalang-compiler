@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions;
 
 import org.walkmod.javalang.compiler.symbols.SymbolType;
 
-public class SymbolTypeAssert extends SymbolDataAssert<SymbolTypeAssert, SymbolType> {
+public class SymbolTypeAssert extends AbstractSymbolDataAssert<SymbolTypeAssert, SymbolType> {
 
     public SymbolTypeAssert(SymbolType actual) {
         super(actual, SymbolTypeAssert.class);
@@ -15,7 +15,7 @@ public class SymbolTypeAssert extends SymbolDataAssert<SymbolTypeAssert, SymbolT
         return Assertions.assertThat(actual.getClazz()).as(navigationDescription("clazz"));
     }
 
-    public ExtListAssert<SymbolTypeAssert, SymbolType> parameterizedTypes() {
+    public ExtListAssert<SymbolTypeAssert, SymbolType> parameterizedSymbolTypes() {
         return AssertUtil.assertThat(actual.getParameterizedTypes(), SymbolTypeAssert.class,
                 navigationDescription("parameterizedTypes"));
     }

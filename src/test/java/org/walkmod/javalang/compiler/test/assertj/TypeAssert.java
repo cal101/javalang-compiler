@@ -8,7 +8,7 @@ public class TypeAssert extends AbstractNodeAssert<TypeAssert, Type> {
         super(actual, TypeAssert.class);
     }
 
-    public SymbolDataAssert<?, ?> symbolData() {
+    public AbstractSymbolDataAssert<?, ?> symbolData() {
         return symbolData(actual);
     }
 }

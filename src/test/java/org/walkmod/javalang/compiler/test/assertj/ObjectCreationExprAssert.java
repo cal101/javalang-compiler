@@ -28,7 +28,7 @@ public class ObjectCreationExprAssert extends AbstractExpressionAssert<ObjectCre
         return AssertUtil.assertThat(actual.getAnonymousClassBody(), BodyDeclarationAssert.class, "anonymousClassBody");
     }
 
-    public SymbolDataAssert symbolData() {
+    public AbstractSymbolDataAssert symbolData() {
         return symbolData(actual);
     }
 }

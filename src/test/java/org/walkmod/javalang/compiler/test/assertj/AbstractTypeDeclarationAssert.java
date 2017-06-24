@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 
 import org.walkmod.javalang.ast.body.BodyDeclaration;
 import org.walkmod.javalang.ast.body.TypeDeclaration;
+import org.walkmod.javalang.ast.expr.AnnotationExpr;
 
 public class AbstractTypeDeclarationAssert<S extends AbstractTypeDeclarationAssert<S, A>, A extends TypeDeclaration>
         extends AbstractBodyDeclarationAssert<S, A> {
@@ -23,6 +24,11 @@ public class AbstractTypeDeclarationAssert<S extends AbstractTypeDeclarationAsse
     public S hasName(String name) {
         Assertions.assertThat(actual.getName()).as(navigationDescription("name")).isEqualTo(name);
         return (S) this;
+    }
+
+    public ExtListAssert<AnnotationExprAssert, AnnotationExpr> annotations() {
+        return AssertUtil.assertThat(actual.getAnnotations(), AnnotationExprAssert.class,
+                navigationDescription("annotations"));
     }
 
     public ExtListAssert<BodyDeclarationAssert, BodyDeclaration> members() {

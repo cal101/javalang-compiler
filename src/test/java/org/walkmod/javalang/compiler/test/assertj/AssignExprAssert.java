@@ -9,7 +9,7 @@ public class AssignExprAssert extends AbstractExpressionAssert<AssignExprAssert,
         super(actual, AssignExprAssert.class);
     }
 
-    public SymbolDataAssert<?, ?> symbolData() {
+    public AbstractSymbolDataAssert<?, ?> symbolData() {
         return symbolData(actual);
     }
 

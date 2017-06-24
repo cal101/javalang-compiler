@@ -28,4 +28,10 @@ public class ExtListAssert<ELEMENT_ASSERT extends AbstractAssert, ELEMENT> exten
         assertThat(l.size()).as(navigationDescription("size")).isGreaterThan(index);
         return (ELEMENT_ASSERT) assertion.toAssert(l.get(index), description);
     }
+
+    @Override
+    public ExtListAssert<ELEMENT_ASSERT, ELEMENT> hasSize(int expected) {
+        super.hasSize(expected);
+        return this;
+    }
 }

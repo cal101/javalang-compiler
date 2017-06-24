@@ -19,7 +19,7 @@ public class AbstractStatementAssert<S extends AbstractStatementAssert<S, A>, A 
         this(actual, AbstractStatementAssert.class);
     }
 
-    public SymbolDataAssert symbolData() {
+    public AbstractSymbolDataAssert symbolData() {
         return symbolData(actual);
     }
 

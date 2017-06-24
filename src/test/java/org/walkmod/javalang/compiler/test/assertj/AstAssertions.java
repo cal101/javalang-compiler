@@ -127,7 +127,7 @@ public class AstAssertions {
 
     // non AST nodes
 
-    public static SymbolDataAssert<?, ?> assertThat(SymbolData actual) {
+    public static SymbolDataAssert assertThat(SymbolData actual) {
         return new SymbolDataAssert(actual);
     }
 

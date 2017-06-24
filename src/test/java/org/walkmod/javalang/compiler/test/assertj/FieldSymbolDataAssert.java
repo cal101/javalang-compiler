@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.walkmod.javalang.ast.FieldSymbolData;
 import org.walkmod.javalang.ast.SymbolData;
 
-public class FieldSymbolDataAssert extends SymbolDataAssert<FieldSymbolDataAssert, FieldSymbolData> {
+public class FieldSymbolDataAssert extends AbstractSymbolDataAssert<FieldSymbolDataAssert, FieldSymbolData> {
 
     public FieldSymbolDataAssert(FieldSymbolData actual) {
         super(actual, FieldSymbolDataAssert.class);
