@@ -68,20 +68,21 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
     @Override
     public SymbolTable build(SymbolTable genericsSymbolTable) throws Exception {
 
-		if (generics != null) {
-			SymbolType[] syms = ASTSymbolTypeResolver.getInstance().valueOf(generics);
-			genericsSymbolTable.pushScope();
-			updateTypeMappings(Arrays.asList(syms),method.getTypeParameters(), true, genericsSymbolTable,new HashSet<String>());
-		} else if (scope != null) {
-			String symbolName = scope.getClazz().getName();
-			if (scope.getClazz().isMemberClass()) {
-				symbolName = scope.getClazz().getCanonicalName();
-			}
-			Symbol<?> s = symbolTable.findSymbol(symbolName, ReferenceType.TYPE);
-			if (s != null) {
-				Scope scope = s.getInnerScope();
-				if (scope != null) {
-					Map<String, SymbolType> typeParams = scope.getTypeParams();
+        if (generics != null) {
+            SymbolType[] syms = ASTSymbolTypeResolver.getInstance().valueOf(generics);
+            genericsSymbolTable.pushScope();
+            updateTypeMappings(Arrays.asList(syms), method.getTypeParameters(), true, genericsSymbolTable,
+                    new HashSet<String>());
+        } else if (scope != null) {
+            String symbolName = scope.getClazz().getName();
+            if (scope.getClazz().isMemberClass()) {
+                symbolName = scope.getClazz().getCanonicalName();
+            }
+            Symbol<?> s = symbolTable.findSymbol(symbolName, ReferenceType.TYPE);
+            if (s != null) {
+                Scope scope = s.getInnerScope();
+                if (scope != null) {
+                    Map<String, SymbolType> typeParams = scope.getTypeParams();
 
                     Scope newScope = new Scope();
                     for (String key : typeParams.keySet()) {
@@ -138,7 +139,6 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
 
                     } else {
                         genericsSymbolTable.pushSymbol(vname, ReferenceType.TYPE, parameterizedType, null);
-
                     }
 
                     java.lang.reflect.Type[] bounds = tv.getBounds();
@@ -148,7 +148,6 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
 
                             updateTypeMapping(bounds[i], genericsSymbolTable, paramBounds.get(i), genericArgs,
                                     processedTypeVariables);
-
                         }
                     }
                 }
@@ -172,9 +171,10 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
                     }
                 }
 
-			} else if (type instanceof ParameterizedType) {
-				updateTypeMappings(parameterizedType.getParameterizedTypes(), ( (ParameterizedType) type).getActualTypeArguments(), genericArgs, genericsSymbolTable,processedTypeVariables);
-
+            } else if (type instanceof ParameterizedType) {
+                updateTypeMappings(parameterizedType.getParameterizedTypes(),
+                        ((ParameterizedType) type).getActualTypeArguments(), genericArgs, genericsSymbolTable,
+                        processedTypeVariables);
 
             } else if (type instanceof GenericArrayType) {
                 GenericArrayType arrayType = (GenericArrayType) type;
@@ -203,13 +203,14 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
                         }
                     }
                 }
-
             }
         }
     }
 
-	private void updateTypeMappings(final List<SymbolType> paramTypeParams, final java.lang.reflect.Type[] typeArgs, boolean genericArgs, SymbolTable genericsSymbolTable, Set<String> processedTypeVariables) throws InvalidTypeException {
-		if (paramTypeParams != null) {
+    private void updateTypeMappings(final List<SymbolType> paramTypeParams, final java.lang.reflect.Type[] typeArgs,
+            boolean genericArgs, SymbolTable genericsSymbolTable, Set<String> processedTypeVariables)
+            throws InvalidTypeException {
+        if (paramTypeParams != null) {
 
             for (int i = 0; i < typeArgs.length; i++) {
                 SymbolType st = null;
@@ -219,5 +220,5 @@ public class ResultBuilderFromGenerics implements Builder<SymbolTable> {
                 updateTypeMapping(typeArgs[i], genericsSymbolTable, st, genericArgs, processedTypeVariables);
             }
         }
-	}
+    }
 }

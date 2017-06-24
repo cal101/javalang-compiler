@@ -2,10 +2,12 @@ package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.ast.body.BodyDeclaration;
 import org.walkmod.javalang.ast.expr.ObjectCreationExpr;
 
 public class ObjectCreationExprAssert extends AbstractExpressionAssert<ObjectCreationExprAssert, ObjectCreationExpr> {
+
     public ObjectCreationExprAssert(ObjectCreationExpr actual) {
         super(actual, ObjectCreationExprAssert.class);
     }

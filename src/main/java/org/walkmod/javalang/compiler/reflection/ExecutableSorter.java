@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -67,7 +67,6 @@ public class ExecutableSorter implements Comparator<Method> {
                     }
 
                     sortedList.add(pos, method);
-
                 }
             }
 
@@ -105,7 +104,6 @@ public class ExecutableSorter implements Comparator<Method> {
                     while (clazz2.isArray() && clazz1.isArray()) {
                         clazz2 = clazz2.getComponentType();
                         clazz1 = clazz1.getComponentType();
-
                     }
 
                     if (i == params1.length - 1) {
@@ -117,12 +115,10 @@ public class ExecutableSorter implements Comparator<Method> {
                         } else {
 
                             isMethod2First = method1.isVarArgs() && !method2.isVarArgs();
-
                         }
                     } else {
                         isMethod2First = ClassInspector.isMoreSpecficFor(clazz2, clazz1, arg);
                     }
-
                 }
                 if (isMethod2First) {
                     return 1;
@@ -134,5 +130,4 @@ public class ExecutableSorter implements Comparator<Method> {
             }
         }
     }
-
 }

@@ -1,19 +1,20 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
 package org.walkmod.javalang.compiler.reflection;
 
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
@@ -23,14 +24,11 @@ import org.walkmod.javalang.compiler.Builder;
 import org.walkmod.javalang.compiler.symbols.SymbolType;
 import org.walkmod.javalang.exceptions.InvalidTypeException;
 
-import java.lang.reflect.Type;
-
 /**
- * For a given generic letter (K, M, T,..) resolves if the contained class has a
- * value for that letter
- * 
- * @author rpau
+ * For a given generic letter (K, M, T,..) resolves if the contained class has a value for that
+ * letter
  *
+ * @author rpau
  */
 public class GenericBuilderFromGenericClasses implements Builder<Map<String, SymbolType>> {
 
@@ -43,9 +41,7 @@ public class GenericBuilderFromGenericClasses implements Builder<Map<String, Sym
         this.parameterizedTypes = parameterizedTypes;
     }
 
-    public GenericBuilderFromGenericClasses() {
-
-    }
+    public GenericBuilderFromGenericClasses() {}
 
     public void setClazz(Class<?> clazz) {
         this.clazz = clazz;

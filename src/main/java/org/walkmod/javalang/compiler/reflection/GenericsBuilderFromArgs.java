@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -30,12 +30,10 @@ import org.walkmod.javalang.compiler.types.TypesLoaderVisitor;
 import org.walkmod.javalang.exceptions.NoSuchExpressionTypeException;
 
 /**
- * For a given set of expressions, which some of them could reference an
- * specific class (e.g A.class), when the parameter is generic (e.g. T), then
- * the map that T corresponds to A.class
- * 
- * @author rpau
+ * For a given set of expressions, which some of them could reference an specific class (e.g
+ * A.class), when the parameter is generic (e.g. T), then the map that T corresponds to A.class
  *
+ * @author rpau
  */
 public class GenericsBuilderFromArgs implements Builder<Map<String, SymbolType>> {
 
@@ -48,7 +46,6 @@ public class GenericsBuilderFromArgs implements Builder<Map<String, SymbolType>>
     public GenericsBuilderFromArgs(Method method, List<Expression> argumentValues) {
         this.method = method;
         this.argumentValues = argumentValues;
-
     }
 
     public void setMethod(Method method) {
@@ -104,5 +101,4 @@ public class GenericsBuilderFromArgs implements Builder<Map<String, SymbolType>>
 
         return obj;
     }
-
 }

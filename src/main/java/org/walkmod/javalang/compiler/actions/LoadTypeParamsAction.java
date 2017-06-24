@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -47,7 +47,6 @@ public class LoadTypeParamsAction extends SymbolAction {
                 n.accept(gen, null);
             }
         }
-
     }
 
     private class ProcessGenerics<A> extends VoidVisitorAdapter<A> {
@@ -80,7 +79,6 @@ public class LoadTypeParamsAction extends SymbolAction {
         public void visit(ObjectCreationExpr n, A ctx) {
             ClassOrInterfaceType superType = n.getType();
             processSuperGenerics(table, symbol, superType);
-
         }
 
         private void processSuperGenerics(SymbolTable table, Symbol<?> symbol, ClassOrInterfaceType type) {
@@ -122,10 +120,8 @@ public class LoadTypeParamsAction extends SymbolAction {
                     for (int i = 0; i < tps.length; i++) {
 
                         table.pushSymbol(tps[i].getName(), ReferenceType.TYPE_PARAM, params.get(i), null);
-
                     }
                     table.popScope(true);
-
                 }
                 Set<String> genericLetters = typeMapping.keySet();
                 if (genericLetters != null) {
@@ -137,7 +133,6 @@ public class LoadTypeParamsAction extends SymbolAction {
                     }
                 }
             }
-
         }
     }
 
@@ -176,7 +171,6 @@ public class LoadTypeParamsAction extends SymbolAction {
                 thisType.setParameterizedTypes(parameterizedTypes);
             }
         }
-
     }
 
     public void recursiveTemplateSubstitution(SymbolType st, Map<String, SymbolType> typeParamsMap) {
@@ -206,8 +200,6 @@ public class LoadTypeParamsAction extends SymbolAction {
                 }
                 st.setParameterizedTypes(paramsFinal);
             }
-
         }
-
     }
 }

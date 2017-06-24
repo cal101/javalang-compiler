@@ -14,8 +14,8 @@ import org.walkmod.javalang.ast.expr.UnaryExpr;
 import org.walkmod.javalang.visitors.GenericVisitorAdapter;
 
 /**
- * Evaluates expression if it represents a constant of "false" acceptable
- * for conditional compilation.
+ * Evaluates expression if it represents a constant of "false" acceptable for conditional
+ * compilation.
  *
  * If a definitive constant condition is met this condition is returned, otherwise null.
  *
@@ -23,6 +23,7 @@ import org.walkmod.javalang.visitors.GenericVisitorAdapter;
  * http://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html#jls-14.21
  */
 class ConditionalCompilationConditionEvaluator extends GenericVisitorAdapter<Object, Void> {
+
     @Override
     public Boolean visit(BooleanLiteralExpr n, Void arg) {
         return n.getValue();
@@ -31,9 +32,7 @@ class ConditionalCompilationConditionEvaluator extends GenericVisitorAdapter<Obj
     @Override
     public Object visit(UnaryExpr n, Void arg) {
         final Object inner = n.getExpr().accept(this, arg);
-        return inner instanceof Boolean && n.getOperator() == UnaryExpr.Operator.not
-                ? !(Boolean)inner
-                : null;
+        return inner instanceof Boolean && n.getOperator() == UnaryExpr.Operator.not ? !(Boolean) inner : null;
     }
 
     @Override
@@ -61,10 +60,7 @@ class ConditionalCompilationConditionEvaluator extends GenericVisitorAdapter<Obj
     @Override
     public Boolean visit(BinaryExpr n, Void arg) {
         final Object leftLiteral = n.getLeft().accept(this, arg);
-        if (!(leftLiteral instanceof Double)
-                && !(leftLiteral instanceof Long)
-                && !(leftLiteral instanceof Boolean)
-                ) {
+        if (!(leftLiteral instanceof Double) && !(leftLiteral instanceof Long) && !(leftLiteral instanceof Boolean)) {
             return null;
         }
         final Object rightLiteral = n.getLeft().accept(this, arg);
@@ -128,7 +124,7 @@ class ConditionalCompilationConditionEvaluator extends GenericVisitorAdapter<Obj
     @Override
     public Object visit(NameExpr n, Void arg) {
         final SymbolDefinition sd = n.getSymbolDefinition();
-        return sd instanceof Node ? ((Node)sd).accept(this, arg) : null;
+        return sd instanceof Node ? ((Node) sd).accept(this, arg) : null;
     }
 
     @Override

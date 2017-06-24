@@ -1,9 +1,11 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.ast.expr.IntegerLiteralExpr;
 
 public class IntegerLiteralExprAssert extends AbstractExpressionAssert<IntegerLiteralExprAssert, IntegerLiteralExpr> {
+
     public IntegerLiteralExprAssert(IntegerLiteralExpr actual) {
         super(actual, IntegerLiteralExprAssert.class);
     }

@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -19,8 +19,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
+
 import org.walkmod.javalang.ast.CompilationUnit;
 import org.walkmod.javalang.compiler.symbols.SymbolTable;
 import org.walkmod.javalang.compiler.types.TypesLoaderVisitor;
@@ -55,7 +55,6 @@ public class TypeTableTest extends SemanticTest {
         cu.accept(ttl, null);
 
         Assert.assertNotNull(st.findSymbol("Scope"));
-
     }
 
     @Test
@@ -73,7 +72,6 @@ public class TypeTableTest extends SemanticTest {
         cu.accept(ttl, null);
 
         Assert.assertNotNull(st.findSymbol("String"));
-
     }
 
     @Test
@@ -120,5 +118,4 @@ public class TypeTableTest extends SemanticTest {
         Assert.assertNotNull(st.findSymbol("B.C"));
         Assert.assertNull(st.findSymbol("C"));
     }
-
 }

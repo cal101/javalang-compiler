@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,7 +27,6 @@ import org.walkmod.javalang.ast.Node;
 import org.walkmod.javalang.ast.SymbolDataAware;
 import org.walkmod.javalang.ast.SymbolDefinition;
 import org.walkmod.javalang.ast.SymbolReference;
-import org.walkmod.javalang.ast.body.ClassOrInterfaceDeclaration;
 import org.walkmod.javalang.ast.body.EnumConstantDeclaration;
 import org.walkmod.javalang.ast.body.TypeDeclaration;
 import org.walkmod.javalang.ast.expr.ObjectCreationExpr;
@@ -98,7 +97,6 @@ public class SymbolTable {
                 } else
                     return null;
             }
-
         }
 
         Scope currentTypeScope = null;
@@ -116,7 +114,6 @@ public class SymbolTable {
                         currentTypeScope = scope;
                     }
                 }
-
             }
             if (auxScope == null) {
                 auxScope = symbolScope;
@@ -284,7 +281,6 @@ public class SymbolTable {
 
     public String generateAnonymousClass() {
         return getTypeAnonymousClassPreffix(null);
-
     }
 
     private String getTypeAnonymousClassPreffix(String name) {
@@ -297,8 +293,10 @@ public class SymbolTable {
             Symbol<?> rootSymbol = sc.getRootSymbol();
             if (rootSymbol != null) {
                 SymbolDefinition sd = rootSymbol.getLocation();
-                if (sd instanceof ObjectCreationExpr || sd instanceof TypeDeclaration
-                        || sd instanceof TypeDeclarationStmt || sd instanceof EnumConstantDeclaration) {
+                if (sd instanceof ObjectCreationExpr
+                        || sd instanceof TypeDeclaration
+                        || sd instanceof TypeDeclarationStmt
+                        || sd instanceof EnumConstantDeclaration) {
 
                     int num = 1;
                     String preffix = ((SymbolDataAware<?>) sd).getSymbolData().getName();
@@ -314,15 +312,12 @@ public class SymbolTable {
                         while (aux != null) {
                             num++;
                             aux = indexStructure.get(0).findSymbol(preffix + "$" + num + name, ReferenceType.TYPE);
-
                         }
-
                     }
 
                     suffixName = "$" + num;
                     return preffix + suffixName;
                 }
-
             }
             j--;
         }
@@ -346,7 +341,6 @@ public class SymbolTable {
         } else {
             return false;
         }
-
     }
 
     public Symbol<?> pushSymbol(String symbolName, ReferenceType referenceType, SymbolType symbolType, Node location) {
@@ -434,7 +428,5 @@ public class SymbolTable {
             scope = new Scope(actions);
         }
         indexStructure.push(scope);
-
     }
-
 }

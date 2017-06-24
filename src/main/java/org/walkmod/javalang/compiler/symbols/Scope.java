@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -67,7 +67,6 @@ public class Scope {
 
     public Scope(List<SymbolAction> actions) {
         this.actions = actions;
-
     }
 
     public void setRootSymbol(Symbol<?> rootSymbol) {
@@ -137,10 +136,8 @@ public class Scope {
                     if (!local || superSymbol.getLocation() instanceof ClassOrInterfaceDeclaration) {
                         result = scope.findSymbol(name, local, referenceType);
                     }
-
                 }
             }
-
         }
         return result;
     }
@@ -173,7 +170,7 @@ public class Scope {
             List<Symbol<?>> list = it.next();
             for (Symbol<?> symbol : list) {
                 if (symbol.getReferenceType() == referenceType) {// yes, by
-                                                                 // reference
+                                                                     // reference
 
                     if (symbol.getType().getName().startsWith(typeName)) {
                         result.add(symbol);
@@ -183,7 +180,6 @@ public class Scope {
         }
 
         return result;
-
     }
 
     public List<Symbol<?>> getSymbolsByType(ReferenceType... referenceType) {
@@ -211,7 +207,6 @@ public class Scope {
         }
 
         return result;
-
     }
 
     public Map<String, SymbolType> getTypeParams() {
@@ -338,7 +333,6 @@ public class Scope {
                                 execs.put(i, m);
                             }
                         }
-
                     }
                     i++;
                 }
@@ -368,11 +362,11 @@ public class Scope {
 
                     Scope innerScope = superSymbol.getInnerScope();
                     if (innerScope != null) {
-                        if (!local || superSymbol.getLocation() instanceof ObjectCreationExpr
+                        if (!local
+                                || superSymbol.getLocation() instanceof ObjectCreationExpr
                                 || superSymbol.getLocation() instanceof ClassOrInterfaceDeclaration) {
                             result = innerScope.findSymbol(name, false, scope, args, predicates, referenceType);
                         }
-
                     }
                 }
             }
@@ -380,7 +374,6 @@ public class Scope {
                 MethodSymbol sm = (MethodSymbol) result;
                 result = sm.buildTypeParameters(typeParams);
             }
-
         }
         return result;
     }
@@ -434,7 +427,8 @@ public class Scope {
                         Object originalLocation = value.getLocation();
                         Object newLocation = symbol.getLocation();
 
-                        if (originalLocation != null && newLocation != null
+                        if (originalLocation != null
+                                && newLocation != null
                                 && (originalLocation instanceof ImportDeclaration)
                                 && (newLocation instanceof ImportDeclaration)) {
                             // there is an import override, the non asterisk has
@@ -528,5 +522,4 @@ public class Scope {
     public void incrInnerAnonymousClassCounter() {
         innerAnonymousClassCounter++;
     }
-
 }

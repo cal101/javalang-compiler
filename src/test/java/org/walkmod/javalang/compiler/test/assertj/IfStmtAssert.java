@@ -3,6 +3,7 @@ package org.walkmod.javalang.compiler.test.assertj;
 import org.walkmod.javalang.ast.stmt.IfStmt;
 
 public class IfStmtAssert extends AbstractStatementAssert<IfStmtAssert, IfStmt> {
+
     IfStmtAssert(IfStmt actual) {
         super(actual, IfStmtAssert.class);
     }

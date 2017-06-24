@@ -1,9 +1,11 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.ast.expr.BinaryExpr;
 
 public class BinaryExprAssert extends AbstractExpressionAssert<BinaryExprAssert, BinaryExpr> {
+
     public BinaryExprAssert(BinaryExpr actual) {
         super(actual, BinaryExprAssert.class);
     }

@@ -5,6 +5,7 @@ import org.walkmod.javalang.ast.ImportDeclaration;
 import org.walkmod.javalang.ast.body.TypeDeclaration;
 
 public class CompilationUnitAssert extends AbstractNodeAssert<CompilationUnitAssert, CompilationUnit> {
+
     CompilationUnitAssert(CompilationUnit actual) {
         super(actual, CompilationUnitAssert.class);
     }

@@ -5,9 +5,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
  */
 public class TypesTest {
+
     @Test
     public void isAssignable() throws Exception {
         assertFalse(Types.isAssignable(Object.class, Short.class));
@@ -15,5 +15,4 @@ public class TypesTest {
         assertFalse(Types.isAssignable(Object.class, String.class));
         assertTrue(Types.isAssignable(String.class, Object.class));
     }
-
 }

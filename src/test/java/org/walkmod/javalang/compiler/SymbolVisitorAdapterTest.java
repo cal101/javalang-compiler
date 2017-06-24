@@ -29,6 +29,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.walkmod.javalang.ASTManager;
 import org.walkmod.javalang.ast.CompilationUnit;
 import org.walkmod.javalang.ast.ImportDeclaration;
@@ -69,7 +70,6 @@ import org.walkmod.javalang.compiler.test.assertj.FieldDeclarationAssert;
 import org.walkmod.javalang.compiler.test.assertj.MethodCallExprAssert;
 import org.walkmod.javalang.compiler.test.assertj.StatementAssert;
 import org.walkmod.javalang.compiler.test.assertj.VariableDeclarationExprAssert;
-import org.walkmod.javalang.test.SemanticTest;
 import org.walkmod.javalang.util.FileUtils;
 
 import static org.walkmod.javalang.compiler.test.assertj.AstAssertions.assertThat;
@@ -142,9 +142,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     @Test
     public void testRemoveUnusedMethods() throws Exception {
         /*
-         * TODO: cadena de dependencias: que pasa si lo q eliminamos hace
-         * referencia a otro elemento privado que sólo referencia el que
-         * eliminamos?
+         * TODO: cadena de dependencias: que pasa si lo q eliminamos hace referencia a otro elemento
+         * privado que sólo referencia el que eliminamos?
          */
         CompilationUnit cu = runRemoveUnusedMembers("public class Foo { private void bar(){} }");
         Assert.assertTrue(cu.getTypes().get(0).getMembers().isEmpty());
@@ -203,7 +202,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         CompilationUnit cu = runRemoveUnusedMembers("public class Foo { public void bar(){ int i;} }");
         MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(0);
         Assert.assertTrue(md.getBody().getStmts().isEmpty());
-
     }
 
     @Test
@@ -240,7 +238,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         CompilationUnit cu = runRemoveUnusedMembers(
                 "import javax.annotation.Generated; @Generated(value=\"WALKMOD\") public class Foo {}");
         Assert.assertTrue(!cu.getImports().isEmpty());
-
     }
 
     @Test
@@ -256,13 +253,17 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + "given list. Only objects present in the list (according to {@link Object#equals}) may be\n"
                 + "compared. This comparator imposes a \"partial ordering\" over the type {@code T}. Subsequent\n"
                 + "changes to the {@code valuesInOrder} list will have no effect on the returned comparator. Null\n"
-                + "values in the list are not supported.\n\n" + "<p>\n"
+                + "values in the list are not supported.\n\n"
+                + "<p>\n"
                 + "The returned comparator throws an {@link ClassCastException} when it receives an input\n"
-                + "parameter that isn't among the provided values.\n\n" + "<p>\n*"
-                + "The generated comparator is serializable if all the provided values are serializable.\n" +
+                + "parameter that isn't among the provided values.\n\n"
+                + "<p>\n*"
+                + "The generated comparator is serializable if all the provided values are serializable.\n"
+                +
 
                 " @param valuesInOrder the values that the returned comparator will be able to compare, in the\n"
-                + "order the comparator should induce\n" + " @return the comparator described above\n"
+                + "order the comparator should induce\n"
+                + " @return the comparator described above\n"
                 + " @throws NullPointerException if any of the provided values is null\n"
                 + " @throws IllegalArgumentException if {@code valuesInOrder} contains any duplicate values\n"
                 + " (according to {@link Object#equals})\n*";
@@ -271,7 +272,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         runRemoveUnusedMembers(code);
 
         javadoc = "This class provides a skeletal implementation of the {@code Cache} interface to minimize the\n"
-                + " effort required to implement this interface.\n\n" + " <p>\n"
+                + " effort required to implement this interface.\n\n"
+                + " <p>\n"
                 + " To implement a cache, the programmer needs only to extend this class and provide an\n"
                 + " implementation for the {@link #get(Object)} and {@link #getIfPresent} methods.\n"
                 + " {@link #getUnchecked}, {@link #get(Object, Callable)}, and {@link #getAll} are implemented in\n"
@@ -287,10 +289,13 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         javadoc = "Returns a comparator that compares two arrays of unsigned {@code int} values lexicographically.\n"
                 + " That is, it compares, using {@link #compare(int, int)}), the first pair of values that follow\n"
                 + " any common prefix, or when one array is a prefix of the other, treats the shorter array as the\n"
-                + " lesser. For example, {@code [] < [1] < [1, 2] < [2] < [1 << 31]}.\n" +
+                + " lesser. For example, {@code [] < [1] < [1, 2] < [2] < [1 << 31]}.\n"
+                +
 
-                " <p>\n" + " The returned comparator is inconsistent with {@link Object#equals(Object)} (since arrays\n"
-                + " support only identity equality), but it is consistent with {@link Arrays#equals(int[], int[])}.\n" +
+                " <p>\n"
+                + " The returned comparator is inconsistent with {@link Object#equals(Object)} (since arrays\n"
+                + " support only identity equality), but it is consistent with {@link Arrays#equals(int[], int[])}.\n"
+                +
 
                 " @see <a href=\"http://en.wikipedia.org/wiki/Lexicographical_order\"> Lexicographical order\n"
                 + "      article at Wikipedia</a>\n";
@@ -341,9 +346,12 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testReferencesToAnnotationMembers() throws Exception {
-        String code = "import java.lang.annotation.ElementType;\n" + "import java.lang.annotation.Retention;\n"
-                + "import java.lang.annotation.RetentionPolicy;\n" + "import java.lang.annotation.Target;\n"
-                + "@Retention(RetentionPolicy.RUNTIME)\n" + "@Target(ElementType.METHOD)\n"
+        String code = "import java.lang.annotation.ElementType;\n"
+                + "import java.lang.annotation.Retention;\n"
+                + "import java.lang.annotation.RetentionPolicy;\n"
+                + "import java.lang.annotation.Target;\n"
+                + "@Retention(RetentionPolicy.RUNTIME)\n"
+                + "@Target(ElementType.METHOD)\n"
                 + "public @interface Foo { public boolean enabled() default true; }";
         CompilationUnit cu = runRemoveUnusedMembers(code);
         Assert.assertTrue(!cu.getImports().isEmpty());
@@ -407,8 +415,11 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testGenericClasses() throws Exception {
-        CompilationUnit cu = run("public class Box<T> {" + "private T t;" + "public T get() {return t;}"
-                + "public void set(T t) { this.t = t;}" + "}");
+        CompilationUnit cu = run("public class Box<T> {"
+                + "private T t;"
+                + "public T get() {return t;}"
+                + "public void set(T t) { this.t = t;}"
+                + "}");
 
         FieldDeclaration fd = (FieldDeclaration) cu.getTypes().get(0).getMembers().get(0);
         SymbolData sd = fd.getType().getSymbolData();
@@ -419,9 +430,9 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testGenericClassesWithBounds() throws Exception {
-        CompilationUnit cu =
-                run("import java.util.*;import java.io.*; " + "public class Foo<A extends Map<String, Object>>"
-                        + " extends LinkedList<A> implements Serializable{}");
+        CompilationUnit cu = run("import java.util.*;import java.io.*; "
+                + "public class Foo<A extends Map<String, Object>>"
+                + " extends LinkedList<A> implements Serializable{}");
         ClassOrInterfaceDeclaration declaration = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
         List<ClassOrInterfaceType> implementsList = declaration.getImplements();
         SymbolData serializable = implementsList.get(0).getSymbolData();
@@ -513,33 +524,47 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
         Assert.assertNotNull(stmt.getExpression().getSymbolData());
         Assert.assertEquals("A", stmt.getExpression().getSymbolData().getName());
-
     }
 
     @Test
     public void testGenericMethodClassParameter() throws Exception {
-        run("import java.util.List;\n" + "\n" + "public class TypedMethod {\n"
-                + "  public interface Mixin<T extends Mixin> {\n" + "}\n"
-                + "public class AMixin implements Mixin<AMixin> {\n" + "  public List<String> getList() {\n"
-                + "    return null;\n" + "  }\n" + "}\n"
-                + "public <T extends Mixin> T mixin(Class<? extends  T > mixin) {\n" + "  return null;\n" + "}\n"
-                + "public void m() {\n" + "  mixin(AMixin.class).getList().get(0);\n" + "}\n" + "}\n");
+        run("import java.util.List;\n"
+                + "\n"
+                + "public class TypedMethod {\n"
+                + "  public interface Mixin<T extends Mixin> {\n"
+                + "}\n"
+                + "public class AMixin implements Mixin<AMixin> {\n"
+                + "  public List<String> getList() {\n"
+                + "    return null;\n"
+                + "  }\n"
+                + "}\n"
+                + "public <T extends Mixin> T mixin(Class<? extends  T > mixin) {\n"
+                + "  return null;\n"
+                + "}\n"
+                + "public void m() {\n"
+                + "  mixin(AMixin.class).getList().get(0);\n"
+                + "}\n"
+                + "}\n");
         Assert.assertTrue(true);
     }
 
     @Test
     public void testGenericsWithArrayClassParameter() throws Exception {
-        run("public class A {\n" + "  void setContent(byte[] bytes) {}\n"
+        run("public class A {\n"
+                + "  void setContent(byte[] bytes) {}\n"
                 + "  <T> T getBody(Class<T> type) { return null; }\n"
-                + "  void f() { setContent(getBody(byte[].class)); }\n" + "}\n");
+                + "  void f() { setContent(getBody(byte[].class)); }\n"
+                + "}\n");
         Assert.assertTrue(true);
     }
 
     @Test
     public void testRawAndGenericSymbolsDiffer() throws Exception {
-        CompilationUnit cu =
-                run("import java.util.Collection;" + "public class A {" + "  Collection raw() { return null; }"
-                        + "  Collection<java.io.Serializable> col() { return null; }" + "}");
+        CompilationUnit cu = run("import java.util.Collection;"
+                + "public class A {"
+                + "  Collection raw() { return null; }"
+                + "  Collection<java.io.Serializable> col() { return null; }"
+                + "}");
         MethodDeclaration mdRaw = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(0);
         final MethodSymbolData sdRaw = mdRaw.getSymbolData();
         Assert.assertEquals("raw", sdRaw.getMethod().getName());
@@ -553,12 +578,18 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testGenericMethodWithRawArgument() throws Exception {
-        run("import java.util.Collection;\n" + "    public class U {\n"
-                + "        void print(Collection<java.io.Serializable> list) { }\n" + "        void m() {\n"
-                + "            Raw raw = new Raw();\n" + "            print(raw.rawList());\n" + "        }\n"
+        run("import java.util.Collection;\n"
+                + "    public class U {\n"
+                + "        void print(Collection<java.io.Serializable> list) { }\n"
+                + "        void m() {\n"
+                + "            Raw raw = new Raw();\n"
+                + "            print(raw.rawList());\n"
+                + "        }\n"
                 + "    }\n",
-                "import java.util.Collection;\n" + "    public class Raw {\n"
-                        + "        public Collection rawList() {return null;} \n" + "    }\n");
+                "import java.util.Collection;\n"
+                        + "    public class Raw {\n"
+                        + "        public Collection rawList() {return null;} \n"
+                        + "    }\n");
         Assert.assertTrue(true);
     }
 
@@ -574,16 +605,20 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
         Assert.assertNotNull(stmt.getExpression().getSymbolData());
         Assert.assertEquals("A$B", stmt.getExpression().getSymbolData().getName());
-
     }
 
     @Test
     public void testGenericMethodWithArrays() throws Exception {
-        CompilationUnit cu = run("import java.util.Collections;\n" + "import java.util.Map;\n"
-                + "import java.util.HashMap;\n" + " public class A {\n"
-                + "  private final Map<String, Integer[]> params;\n" + "  public A(Map<String,Integer[]> p) {\n"
+        CompilationUnit cu = run("import java.util.Collections;\n"
+                + "import java.util.Map;\n"
+                + "import java.util.HashMap;\n"
+                + " public class A {\n"
+                + "  private final Map<String, Integer[]> params;\n"
+                + "  public A(Map<String,Integer[]> p) {\n"
                 + "    Map<String,Integer[]> m = new HashMap<String,Integer[]>(p);\n"
-                + "    this.params = Collections.unmodifiableMap(m);\n" + "  }\n" + "}");
+                + "    this.params = Collections.unmodifiableMap(m);\n"
+                + "  }\n"
+                + "}");
 
         ClassOrInterfaceDeclaration type = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
 
@@ -610,26 +645,21 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testAssertThatMethodChainingOfTypeVariableHasClazz() throws Exception {
         // ... otherwise NPE exceptions may be thrown in SymbolType.findSymbol
         CompilationUnit cu = run("import static org.assertj.core.api.Assertions.assertThat;\n"
-                + "public class A { public static interface MyIf {} " + "public void f(MyIf a, MyIf b, MyIf c) {\n"
-                + "assertThat(a).isNotNull().isNotSameAs(b).isNotSameAs(c);\n" + "}}");
-        assertThat(cu).types().item(0).asClassOrInterfaceDeclaration().members().item(1).asMethodDeclaration()
-                .body().stmts().item(0).asExpressionStmt().expression().asMethodCallExpr()
-                .hasName("isNotSameAs")
-                .has(hasSymbolDataWithClazz())
-                .scope().asMethodCallExpr()
-                .hasName("isNotSameAs")
-                .has(hasSymbolDataWithClazz())
-                .scope().asMethodCallExpr()
-                .hasName("isNotNull")
-                .has(hasSymbolDataWithClazz())
-                .scope().asMethodCallExpr()
-                .hasName("assertThat")
-                .symbolData()
-                .clazz().isNotNull();
+                + "public class A { public static interface MyIf {} "
+                + "public void f(MyIf a, MyIf b, MyIf c) {\n"
+                + "assertThat(a).isNotNull().isNotSameAs(b).isNotSameAs(c);\n"
+                + "}}");
+        assertThat(cu).types().item(0).asClassOrInterfaceDeclaration().members().item(1).asMethodDeclaration().body()
+                .stmts().item(0).asExpressionStmt().expression().asMethodCallExpr().hasName("isNotSameAs")
+                .has(hasSymbolDataWithClazz()).scope().asMethodCallExpr().hasName("isNotSameAs")
+                .has(hasSymbolDataWithClazz()).scope().asMethodCallExpr().hasName("isNotNull")
+                .has(hasSymbolDataWithClazz()).scope().asMethodCallExpr().hasName("assertThat").symbolData().clazz()
+                .isNotNull();
     }
 
     private static Condition<MethodCallExpr> hasSymbolDataWithClazz() {
         return new Condition<MethodCallExpr>() {
+
             @Override
             public boolean matches(MethodCallExpr value) {
                 Assertions.assertThat(value.getSymbolData().getClazz()).describedAs("symbolData.clazz").isNotNull();
@@ -648,62 +678,88 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testScopeOfSuperClassOfInnerBeforeStaticImport() throws Exception {
-        CompilationUnit cu = run(
-                "" + "import static java.util.Locale.getDefault;\n" + " public class A {\n"
-                        + "  public void trans(String p) { }" + "  public class Derived extends Base {\n"
-                        + "   private void foo() { trans(getDefault());}\n" + "  }\n" + " }",
-                "public abstract class Base { public String getDefault() { return null; } }");
+        CompilationUnit cu = run(""
+                + "import static java.util.Locale.getDefault;\n"
+                + " public class A {\n"
+                + "  public void trans(String p) { }"
+                + "  public class Derived extends Base {\n"
+                + "   private void foo() { trans(getDefault());}\n"
+                + "  }\n"
+                + " }", "public abstract class Base { public String getDefault() { return null; } }");
         Assert.assertTrue(true);
     }
 
     @Test
     public void testScopeOfSuperClassOfInnerStaticBeforeStaticImport() throws Exception {
-        CompilationUnit cu = run(
-                "" + "import static java.util.Locale.getDefault;\n" + " public class A {\n"
-                        + "  public static void trans(String p) { }" + "  public static class Derived extends Base {\n"
-                        + "   private void foo() { trans(getDefault());}\n" + "  }\n" + " }",
-                "public abstract class Base { public String getDefault() { return null; } }");
+        CompilationUnit cu = run(""
+                + "import static java.util.Locale.getDefault;\n"
+                + " public class A {\n"
+                + "  public static void trans(String p) { }"
+                + "  public static class Derived extends Base {\n"
+                + "   private void foo() { trans(getDefault());}\n"
+                + "  }\n"
+                + " }", "public abstract class Base { public String getDefault() { return null; } }");
         Assert.assertTrue(true);
     }
 
     @Test
     public void testScopeOfSuperClassOfInnerStaticConstructorBeforeStaticImport() throws Exception {
-        CompilationUnit cu = run(
-                "" + "import static java.util.Locale.getDefault;\n" + " public class A {\n"
-                        + "  public static void trans(String p) { }" + "  public class B {"
-                        + "   public class Derived extends Base {\n" + "    private Derived() { trans(getDefault());}\n"
-                        + "   }\n" + "  }\n" + " }",
-                "public abstract class Base { public String getDefault() { return null; } }");
+        CompilationUnit cu = run(""
+                + "import static java.util.Locale.getDefault;\n"
+                + " public class A {\n"
+                + "  public static void trans(String p) { }"
+                + "  public class B {"
+                + "   public class Derived extends Base {\n"
+                + "    private Derived() { trans(getDefault());}\n"
+                + "   }\n"
+                + "  }\n"
+                + " }", "public abstract class Base { public String getDefault() { return null; } }");
         Assert.assertTrue(true);
     }
 
     @Test
     public void testScopeOfSuperClassOfLocalConstructorBeforeStaticImport() throws Exception {
         // TODO
-        CompilationUnit cu = run(
-                "" + "import stat" + "ic java.util.Locale.getDefault;\n" + " public class A {\n"
-                        + "  public static void trans(String p) { }" + "  public static class B {" + "   public B() {"
-                        + "    class Derived extends Base {\n" + "     private void foo() { trans(getDefault());}\n"
-                        + "    }\n" + "   }\n" + "  }\n" + " }",
-                "public abstract class Base { public String getDefault() { return null; } }");
+        CompilationUnit cu = run(""
+                + "import stat"
+                + "ic java.util.Locale.getDefault;\n"
+                + " public class A {\n"
+                + "  public static void trans(String p) { }"
+                + "  public static class B {"
+                + "   public B() {"
+                + "    class Derived extends Base {\n"
+                + "     private void foo() { trans(getDefault());}\n"
+                + "    }\n"
+                + "   }\n"
+                + "  }\n"
+                + " }", "public abstract class Base { public String getDefault() { return null; } }");
     }
 
     @Test
     public void testScopeOfSuperOfAnonymousClassBeforeStaticImport() throws Exception {
-        CompilationUnit cu = run(
-                "" + "import static java.util.Locale.getDefault;\n" + " public class A {\n"
-                        + "  public void trans(String p) { }" + "  private Base base = new Base() {\n"
-                        + "   private void foo() { trans(getDefault());}\n" + "  };\n" + " }",
-                "public abstract class Base { public String getDefault() { return null; } }");
+        CompilationUnit cu = run(""
+                + "import static java.util.Locale.getDefault;\n"
+                + " public class A {\n"
+                + "  public void trans(String p) { }"
+                + "  private Base base = new Base() {\n"
+                + "   private void foo() { trans(getDefault());}\n"
+                + "  };\n"
+                + " }", "public abstract class Base { public String getDefault() { return null; } }");
         Assert.assertTrue(true);
     }
 
     @Test
     public void testScopeOfSuperOfAnonymousClass2BeforeStaticImport() throws Exception {
-        CompilationUnit cu = run("" + "import static java.util.Locale.getDefault;\n" + " public class A {\n"
-                + "  public void trans(String p) { }" + "  private void bar() {\n" + "   Base base = new Base() {\n"
-                + "    public void foo() { trans(getDefault());}\n" + "   };\n" + "  };\n" + " }",
-                "public abstract class Base { public String getDefault() { return null; } }");
+        CompilationUnit cu = run(""
+                + "import static java.util.Locale.getDefault;\n"
+                + " public class A {\n"
+                + "  public void trans(String p) { }"
+                + "  private void bar() {\n"
+                + "   Base base = new Base() {\n"
+                + "    public void foo() { trans(getDefault());}\n"
+                + "   };\n"
+                + "  };\n"
+                + " }", "public abstract class Base { public String getDefault() { return null; } }");
         Assert.assertTrue(true);
     }
 
@@ -746,7 +802,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         Assert.assertNotNull(md.getUsages());
         FieldDeclaration fd = (FieldDeclaration) type.getMembers().get(0);
         Assert.assertNotNull(fd.getUsages());
-
     }
 
     @Test
@@ -759,7 +814,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testRecursiveWildcards() throws Exception {
         run("import java.util.*; public class A { static <E extends Comparable<? super E>> Collection<List<E>> orderedPermutations(Iterable<E> elements) { return orderedPermutations(elements);}}");
         Assert.assertTrue(true);
-
     }
 
     @Test
@@ -782,7 +836,10 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         String transform =
                 "public static <F, T> Iterable<T> transform(final Iterable<F> fromIterable, final Function<? super F, ? extends T> function) { return null; }";
 
-        run("import java.util.*; public class A { " + mergeSorted + toIterator + transform
+        run("import java.util.*; public class A { "
+                + mergeSorted
+                + toIterator
+                + transform
                 + " public class Function<F,T> {} }");
 
         Assert.assertTrue(true);
@@ -809,7 +866,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     @Test
     public void testGenericsIntroducedByAnInnerClass() throws Exception {
         String innerClass = "class Reference<T> { public T get() { return null;}} ";
-        String mainClass = "public class A { " + innerClass
+        String mainClass = "public class A { "
+                + innerClass
                 + " void foo() { Reference<Reference<String>> r = null; r.get().get().length(); }}";
         run(mainClass);
         Assert.assertTrue(true);
@@ -819,7 +877,10 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testGenericsWithRewrittenTypeParams() throws Exception {
         String class1 = "class B<T> { public T get() { return null; }}";
         String class2 = "class C<T> extends B<B<T>> {}";
-        String main = "public class A { " + class1 + " " + class2
+        String main = "public class A { "
+                + class1
+                + " "
+                + class2
                 + " void foo () { C<String> c = null; c.get().get().trim().length(); }}";
         run(main);
         Assert.assertTrue(true);
@@ -829,7 +890,10 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testGenericsWithRewrittenTypeParamsWithInheritance() throws Exception {
         String class1 = "class B<T> { public T get() { return null; }}";
         String class2 = "class C<T extends File> extends B<List<T>> { @Override public List<T> get() {return null;}}";
-        String main = "import java.util.*; import java.io.File; public class A { " + class1 + " " + class2
+        String main = "import java.util.*; import java.io.File; public class A { "
+                + class1
+                + " "
+                + class2
                 + " void foo () { C<File> c = null; c.get().iterator().next().getAbsolutePath().trim(); }}";
         run(main);
         Assert.assertTrue(true);
@@ -858,7 +922,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     @Test
     public void testGenericsWithRewrittenTypeParams4() throws Exception {
         String classB = "class B<K, V> { K getKey() { return null; }}";
-        String code = "import java.util.*; public class C<K extends java.io.File, V> { " + classB
+        String code = "import java.util.*; public class C<K extends java.io.File, V> { "
+                + classB
                 + " class A extends B<List<K>, V> { void foo(K value){ value.getAbsolutePath().trim();}}}";
         run(code);
         Assert.assertTrue(true);
@@ -868,7 +933,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testGenericsWithClassParameters() throws Exception {
         String class1 =
                 "public static class Range { public static <C extends Collection<?>> List<C> range(C lower, boolean x, C upper, boolean y) { return null;}}";
-        String code = "import java.util.*; public class A { " + class1
+        String code = "import java.util.*; public class A { "
+                + class1
                 + " void bar(){ Range.range(new ArrayList(), true, new ArrayList(), true).iterator().next().get(0).toString(); }}";
         run(code);
         Assert.assertTrue(true);
@@ -878,7 +944,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testGenericsWithClassParameters2() throws Exception {
         String class1 =
                 "public static class Range { public static <C extends Collection<?>> C range(C lower, boolean x, C upper, boolean y) { return null;}}";
-        String code = "import java.util.*; public class A { " + class1
+        String code = "import java.util.*; public class A { "
+                + class1
                 + " void bar(){ Range.range(new ArrayList(), true, new ArrayList(), true).get(0).toString(); }}";
         run(code);
         Assert.assertTrue(true);
@@ -1005,10 +1072,17 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testArrayOfArrayResolution() throws Exception {
-        run("public class StackedArrayParam {\n" + "    private int[][] rowGroups;\n" + "\n" + "    void f() {\n"
-                + "        setRowGroups(new int[][] {{2, 4, 6, 8, 10, 12, 14}});\n" + "    }\n" + "\n"
-                + "    public void setRowGroups(int[][] rowGroups) {\n" + "        this.rowGroups = rowGroups;\n"
-                + "    }\n" + "}\n");
+        run("public class StackedArrayParam {\n"
+                + "    private int[][] rowGroups;\n"
+                + "\n"
+                + "    void f() {\n"
+                + "        setRowGroups(new int[][] {{2, 4, 6, 8, 10, 12, 14}});\n"
+                + "    }\n"
+                + "\n"
+                + "    public void setRowGroups(int[][] rowGroups) {\n"
+                + "        this.rowGroups = rowGroups;\n"
+                + "    }\n"
+                + "}\n");
         Assert.assertTrue(true);
     }
 
@@ -1126,7 +1200,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         SymbolData sd = mce.getSymbolData();
         Assert.assertNotNull(sd);
         Assert.assertEquals(String.class.getName(), sd.getName());
-
     }
 
     @Test
@@ -1181,69 +1254,53 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         Assert.assertNotNull(sd);
     }
 
-	@Test
-	public void testGenericResultForParameterizedTypeWithInterfaceWitness() throws Exception {
-		checkTypeParameterWithWitness("<C extends Comparable<?>>",
-				"A<C>",
-				"Comparable<java.io.Serializable>",
-				"A<Comparable<java.io.Serializable>>",
-				"A<java.lang.Comparable<java.io.Serializable>>");
-	}
+    @Test
+    public void testGenericResultForParameterizedTypeWithInterfaceWitness() throws Exception {
+        checkTypeParameterWithWitness("<C extends Comparable<?>>", "A<C>", "Comparable<java.io.Serializable>",
+                "A<Comparable<java.io.Serializable>>", "A<java.lang.Comparable<java.io.Serializable>>");
+    }
 
-	@Test
-	public void testGenericResultForParameterizedTypeWithClassWitness() throws Exception {
-		checkTypeParameterWithWitness("<C extends Comparable<?>>",
-				"A<C>",
-				"Integer",
-				"A<Integer>",
-				"A<java.lang.Integer>");
-	}
+    @Test
+    public void testGenericResultForParameterizedTypeWithClassWitness() throws Exception {
+        checkTypeParameterWithWitness("<C extends Comparable<?>>", "A<C>", "Integer", "A<Integer>",
+                "A<java.lang.Integer>");
+    }
 
-	@Test
-	public void testGenericResultForTypeVariableWithInterfaceWitness() throws Exception {
-		checkTypeParameterWithWitness("<C>",
-				"C",
-				"Comparable<java.io.Serializable>",
-				"Comparable<java.io.Serializable>",
-				"java.lang.Comparable<java.io.Serializable>");
-	}
+    @Test
+    public void testGenericResultForTypeVariableWithInterfaceWitness() throws Exception {
+        checkTypeParameterWithWitness("<C>", "C", "Comparable<java.io.Serializable>",
+                "Comparable<java.io.Serializable>", "java.lang.Comparable<java.io.Serializable>");
+    }
 
-	@Test
-	public void testGenericResultForTypeVariableWithClassWitness() throws Exception {
-		checkTypeParameterWithWitness("<C>",
-				"C",
-				"Integer",
-				"Integer",
-				// root for improvement
-				"java.lang.Integer");
-	}
+    @Test
+    public void testGenericResultForTypeVariableWithClassWitness() throws Exception {
+        checkTypeParameterWithWitness("<C>", "C", "Integer", "Integer",
+                // root for improvement
+                "java.lang.Integer");
+    }
 
-	private void checkTypeParameterWithWitness(String typeParam, final String returnType, final String witnessType, final String effectiveType, String expectedType) throws Exception {
-		CompilationUnit cu = run(
-				"public class A<X> {"
-						+ " public static " + typeParam + " " + returnType + " all(){ return null;}\n"
-						+ " void foo() {\n"
-						// expression only
-						+ " A.<" + witnessType + ">all(); \n"
-						// variable
-						+ " " + effectiveType + " v = A.<" + witnessType + ">all();\n"
-						// method parameter
-						+ "  bar(A.<" + witnessType + ">all());\n"
-						+ " }\n"
-						+ " void bar(" + effectiveType + " p) {}\n"
-						+ " }");
-        final ClassOrInterfaceDeclarationAssert type
-                = assertThat(cu).types().item(0).asClassOrInterfaceDeclaration();
-        final ExtListAssert<StatementAssert, Statement> stmts2
-                = type.members().item(1).asMethodDeclaration().body().stmts();
-		stmts2.item(0)
-                .asExpressionStmt().expression().asMethodCallExpr().symbolData()
-                .hasToString(expectedType);
-        stmts2.item(1).asExpressionStmt().expression()
-                .asVariableDeclarationExpr().vars().item(0).expression().symbolData()
-                .hasToString(expectedType);
-        stmts2.item(2).asExpressionStmt().expression()
-                .asMethodCallExpr().args().item(0).symbolData()
+    private void checkTypeParameterWithWitness(String typeParam, final String returnType, final String witnessType,
+            final String effectiveType, String expectedType) throws Exception {
+        CompilationUnit cu = run("public class A<X> {"
+                + " public static "
+                + typeParam
+                + " "
+                + returnType
+                + " all(){ return null;}\n"
+                + " void foo() {\n"
+                // expression only
+                + " A.<" + witnessType + ">all(); \n"
+                // variable
+                + " " + effectiveType + " v = A.<" + witnessType + ">all();\n"
+                // method parameter
+                + "  bar(A.<" + witnessType + ">all());\n" + " }\n" + " void bar(" + effectiveType + " p) {}\n" + " }");
+        final ClassOrInterfaceDeclarationAssert type = assertThat(cu).types().item(0).asClassOrInterfaceDeclaration();
+        final ExtListAssert<StatementAssert, Statement> stmts2 =
+                type.members().item(1).asMethodDeclaration().body().stmts();
+        stmts2.item(0).asExpressionStmt().expression().asMethodCallExpr().symbolData().hasToString(expectedType);
+        stmts2.item(1).asExpressionStmt().expression().asVariableDeclarationExpr().vars().item(0).expression()
+                .symbolData().hasToString(expectedType);
+        stmts2.item(2).asExpressionStmt().expression().asMethodCallExpr().args().item(0).symbolData()
                 .hasToString(expectedType);
     }
 
@@ -1288,8 +1345,16 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         String m6 = "public static long[] aryEq(final long[] value) {return null;} ";
         String m7 = "public static short[] aryEq(final short[] value) {return null; }";
         String m8 = "public static <T> T[] aryEq(final T[] value) {return null; }";
-        CompilationUnit cu = run("public class A { public void foo(byte[] arg){aryEq(arg);} " + m1 + m2 + m3 + m4 + m5
-                + m6 + m7 + m8 + "}");
+        CompilationUnit cu = run("public class A { public void foo(byte[] arg){aryEq(arg);} "
+                + m1
+                + m2
+                + m3
+                + m4
+                + m5
+                + m6
+                + m7
+                + m8
+                + "}");
         MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(0);
         ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(0);
         MethodCallExpr mce = (MethodCallExpr) stmt.getExpression();
@@ -1420,7 +1485,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testMethodsOrderAsStaticImport() throws Exception {
         String importedClass =
                 "package test; public class Test { public static <T extends Comparable<?>> T assertThat(T target) {return null;}\n "
-                        + "public static Iterable<?> assertThat(Iterable target) {return null;}" + "}";
+                        + "public static Iterable<?> assertThat(Iterable target) {return null;}"
+                        + "}";
         String mainClass =
                 "import static test.Test.assertThat; import java.util.*; class A{ void foo() { assertThat(new LinkedList<String>()); } }";
         CompilationUnit cu = run(mainClass, importedClass);
@@ -1440,7 +1506,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                         + "public static Collection assertThat(Collection target) {return null;}"
                         + "public static Boolean assertThat(Boolean target) {return null;}"
                         + "public static String assertThat(String target) {return null;}"
-                        + "public static Object assertThat(Object target) {return null;}" + "}";
+                        + "public static Object assertThat(Object target) {return null;}"
+                        + "}";
         String mainClass =
                 "import static test.Test.assertThat; import java.util.*; class A{ void foo() { assertThat(\"hello\"); } }";
         CompilationUnit cu = run(mainClass, importedClass);
@@ -1455,7 +1522,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testMethodsOrderAsStaticImport3() throws Exception {
         String importedClass =
                 "package test; public class Test { public static <T extends Comparable<?>> T assertThat(T target) {return null;}\n "
-                        + "public static Iterable<?> assertThat(Object target) {return null;}" + "}";
+                        + "public static Iterable<?> assertThat(Object target) {return null;}"
+                        + "}";
         String mainClass =
                 "import static test.Test.assertThat; import java.util.*; class A{ void foo() { assertThat(\"hello\"); } }";
         CompilationUnit cu = run(mainClass, importedClass);
@@ -1480,20 +1548,23 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     @Test
     public void testStreams1() throws Exception {
         if (SourceVersion.latestSupported().ordinal() >= 8) {
-            CompilationUnit cu = run(
-                    "import java.util.function.*;import java.util.*;import java.util.concurrent.*;import java.util.stream.*;"
-                            + " public class A<T> {" + " Map<Object, Function<Stream<T>, ?>> forks; "
-                            + " public void foo(){  " + "List<BlockingQueue<T>> queues = new ArrayList<>(); "
-                            + "forks.entrySet().stream().reduce(" + "new HashMap<Object, Future<?>>(), "
+            CompilationUnit cu =
+                    run("import java.util.function.*;import java.util.*;import java.util.concurrent.*;import java.util.stream.*;"
+                            + " public class A<T> {"
+                            + " Map<Object, Function<Stream<T>, ?>> forks; "
+                            + " public void foo(){  "
+                            + "List<BlockingQueue<T>> queues = new ArrayList<>(); "
+                            + "forks.entrySet().stream().reduce("
+                            + "new HashMap<Object, Future<?>>(), "
                             + "(map, e) -> { map.put(e.getKey(), getOperationResult(queues, e.getValue())); return map;},"
-                            + "(m1, m2) -> {return m1;}); " + "} "
+                            + "(m1, m2) -> {return m1;}); "
+                            + "} "
                             + "private Future<?> getOperationResult(List<BlockingQueue<T>> queues, Function<Stream<T>, ?> f) {return null; }}");
             MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(1);
             ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(1);
             SymbolData sd = stmt.getExpression().getSymbolData();
             Assert.assertNotNull(sd);
         }
-
     }
 
     @Test
@@ -1508,7 +1579,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
             CompilationUnit cu = run(file3, file2, file1);
             Assert.assertTrue(true);
         }
-
     }
 
     @Test
@@ -1540,7 +1610,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
             Assert.assertEquals("java.util.concurrent.CompletableFuture", sd.getName());
             Assert.assertNotNull(sd.getParameterizedTypes());
             Assert.assertEquals("A", sd.getParameterizedTypes().get(0).getName());
-
         }
     }
 
@@ -1610,9 +1679,11 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     @Test
     public void testMethodReferencesForTypes() throws Exception {
         if (SourceVersion.latestSupported().ordinal() >= 8) {
-            run("import java.util.*; import java.util.function.*;import java.util.stream.*; " + "public class A { "
+            run("import java.util.*; import java.util.function.*;import java.util.stream.*; "
+                    + "public class A { "
                     + "void foo(Stream<Character> stream) {"
-                    + " stream.reduce(new WordCounter(0, true), WordCounter::accumulate, WordCounter::combine);" + " }"
+                    + " stream.reduce(new WordCounter(0, true), WordCounter::accumulate, WordCounter::combine);"
+                    + " }"
                     + "  private static class WordCounter { public WordCounter(int counter, boolean lastSpace) {}  public WordCounter accumulate(Character c) {return null;} public WordCounter combine(WordCounter wordCounter) { return null; } } }");
             Assert.assertTrue(true);
         }
@@ -1621,8 +1692,11 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     @Test
     public void testMethodReferencesAsObjectCreation() throws Exception {
         if (SourceVersion.latestSupported().ordinal() >= 8) {
-            run("import java.util.function.Supplier;" + "import java.util.HashMap;" + "import java.util.Map;"
-                    + "public class A{ " + " static private interface Product {}"
+            run("import java.util.function.Supplier;"
+                    + "import java.util.HashMap;"
+                    + "import java.util.Map;"
+                    + "public class A{ "
+                    + " static private interface Product {}"
                     + " static private class Loan implements Product {} "
                     + "final static private Map<String, Supplier<Product>> map = new HashMap<>();"
                     + "    static {map.put(\"loan\", Loan::new);}}");
@@ -1640,9 +1714,17 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testMultipleVariablesAtDifferentScopes() throws Exception {
-        String code = "public class A { public final int value = 4; public void doIt() { " + " int value = 6; "
-                + "Runnable r = new Runnable(){ " + "public final int value = 5;" + "public void run(){"
-                + "int value = 10;" + "System.out.println(this.value);" + "}" + "}; " + " r.run(); }" + "}";
+        String code = "public class A { public final int value = 4; public void doIt() { "
+                + " int value = 6; "
+                + "Runnable r = new Runnable(){ "
+                + "public final int value = 5;"
+                + "public void run(){"
+                + "int value = 10;"
+                + "System.out.println(this.value);"
+                + "}"
+                + "}; "
+                + " r.run(); }"
+                + "}";
         CompilationUnit cu = run(code);
         List<BodyDeclaration> members = cu.getTypes().get(0).getMembers();
         FieldDeclaration fd = (FieldDeclaration) members.get(0);
@@ -1672,14 +1754,13 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         vdexpr = (VariableDeclarationExpr) expression.getExpression();
         vds = vdexpr.getVars();
         Assert.assertNull(vds.get(0).getUsages());
-
     }
 
     @Test
     public void testSyntheticIntersectionTypes() throws Exception {
-	    /*
-	     The type of the ternary operator is the intersection type of the sub expression types.
-	     */
+        /*
+         * The type of the ternary operator is the intersection type of the sub expression types.
+         */
         String mySet = ""
                 + "import java.io.Serializable;\n"
                 + "import java.util.Set;\n"
@@ -1700,21 +1781,13 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + "}\n";
         CompilationUnit cu = run(code, mySet);
         final ExtListAssert<StatementAssert, Statement> fStmts =
-                assertThat(cu)
-                        .types().item(0).members().item(3).asMethodDeclaration()
-                        .body().stmts();
-        fStmts.item(0).asExpressionStmt().expression().asMethodCallExpr()
-                .hasName("doSer")
-                .args().item(0)
-                .symbolData().boundClasses().contains(Serializable.class);
-        fStmts.item(1).asExpressionStmt().expression().asMethodCallExpr()
-                .hasName("doClone")
-                .args().item(0)
-                .symbolData().boundClasses().contains(Cloneable.class);
-        fStmts.item(2).asExpressionStmt().expression().asMethodCallExpr()
-                .hasName("doSet")
-                .args().item(0)
-                .symbolData().boundClasses().contains(Set.class);
+                assertThat(cu).types().item(0).members().item(3).asMethodDeclaration().body().stmts();
+        fStmts.item(0).asExpressionStmt().expression().asMethodCallExpr().hasName("doSer").args().item(0).symbolData()
+                .boundClasses().contains(Serializable.class);
+        fStmts.item(1).asExpressionStmt().expression().asMethodCallExpr().hasName("doClone").args().item(0).symbolData()
+                .boundClasses().contains(Cloneable.class);
+        fStmts.item(2).asExpressionStmt().expression().asMethodCallExpr().hasName("doSet").args().item(0).symbolData()
+                .boundClasses().contains(Set.class);
     }
 
     @Test
@@ -1732,28 +1805,17 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + "  doSer(value < 10 ? false : value);\n"
                 + "  doComp(value < 10 ? false : value);\n"
                 + " }\n"
-                +"}\n";
+                + "}\n";
         CompilationUnit cu = run(code);
-        final ExtListAssert<StatementAssert, Statement> fooStmts = assertThat(cu)
-                .types().item(0).asClassOrInterfaceDeclaration().members().item(2).asMethodDeclaration()
-                .body().stmts();
-        fooStmts.item(0).asExpressionStmt().expression().asVariableDeclarationExpr()
-                .vars().item(0).expression().asBinaryExpr()
-                .left().symbolData()
-                .boundClasses()
-                .hasSize(2)
-                .extracting("name")
+        final ExtListAssert<StatementAssert, Statement> fooStmts = assertThat(cu).types().item(0)
+                .asClassOrInterfaceDeclaration().members().item(2).asMethodDeclaration().body().stmts();
+        fooStmts.item(0).asExpressionStmt().expression().asVariableDeclarationExpr().vars().item(0).expression()
+                .asBinaryExpr().left().symbolData().boundClasses().hasSize(2).extracting("name")
                 .containsOnly("java.io.Serializable", "java.lang.Comparable");
-        fooStmts.item(1).asExpressionStmt().expression().asMethodCallExpr()
-                .hasName("doSer")
-                .symbolData().asMethodSymbolData()
-                .method()
-                .isNotNull();
-        fooStmts.item(2).asExpressionStmt().expression().asMethodCallExpr()
-                .hasName("doComp")
-                .symbolData().asMethodSymbolData()
-                .method()
-                .isNotNull();
+        fooStmts.item(1).asExpressionStmt().expression().asMethodCallExpr().hasName("doSer").symbolData()
+                .asMethodSymbolData().method().isNotNull();
+        fooStmts.item(2).asExpressionStmt().expression().asMethodCallExpr().hasName("doComp").symbolData()
+                .asMethodSymbolData().method().isNotNull();
     }
 
     @Test
@@ -1860,7 +1922,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         ClassOrInterfaceDeclaration type = (ClassOrInterfaceDeclaration) cu.getTypes().get(0);
         MethodDeclaration md = (MethodDeclaration) type.getMembers().get(0);
         Assert.assertNotNull(md.getUsages());
-
     }
 
     @Test
@@ -1874,7 +1935,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(0);
 
         Assert.assertNotNull(stmt.getExpression().getSymbolData());
-
     }
 
     @Test
@@ -1909,7 +1969,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         Assert.assertNotNull(id.getUsages());
 
         Assert.assertEquals(1, id.getUsages().size());
-
     }
 
     @Test
@@ -2052,7 +2111,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         ExpressionStmt exprStmt = (ExpressionStmt) md.getBody().getStmts().get(0);
         MethodCallExpr mce = (MethodCallExpr) exprStmt.getExpression();
         Assert.assertEquals("Bar", mce.getSymbolData().getMethod().getDeclaringClass().getName());
-
     }
 
     @Test
@@ -2168,7 +2226,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(1);
         MethodCallExpr mce = (MethodCallExpr) stmt.getExpression();
         Assert.assertNotNull(mce.getSymbolData());
-
     }
 
     @Test
@@ -2192,7 +2249,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         ExpressionStmt stmt = (ExpressionStmt) md.getBody().getStmts().get(0);
         MethodCallExpr mce = (MethodCallExpr) stmt.getExpression();
         Assert.assertNotNull(mce.getSymbolData());
-
     }
 
     @Test
@@ -2207,7 +2263,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         MethodCallExpr mce = (MethodCallExpr) stmt.getExpression();
         Assert.assertNotNull(mce.getSymbolData());
         Assert.assertEquals("java.lang.String", mce.getSymbolData().getName());
-
     }
 
     @Test
@@ -2223,7 +2278,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         SymbolData sd = ae.getVars().get(0).getInit().getSymbolData();
 
         Assert.assertNotNull(sd);
-
     }
 
     @Test
@@ -2267,7 +2321,6 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
         Assert.assertNotNull(cu);
 
         Assert.assertNotNull(cu.getImports().get(0).getUsages());
-
     }
 
     @Test
@@ -2292,11 +2345,17 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testImportsOfNestedClasses2() throws Exception {
-        String code = "" + "import bar.Arrays;\n" + "import bar.Arrays2.Leg;\n" + "public class Foo {\n"
-                + "  Arrays.Leg leg1a = new bar.Arrays.Leg();\n" + "  bar.Arrays.Leg leg1b = new bar.Arrays.Leg();\n"
+        String code = ""
+                + "import bar.Arrays;\n"
+                + "import bar.Arrays2.Leg;\n"
+                + "public class Foo {\n"
+                + "  Arrays.Leg leg1a = new bar.Arrays.Leg();\n"
+                + "  bar.Arrays.Leg leg1b = new bar.Arrays.Leg();\n"
                 + "  bar.Arrays.Leg leg1c = new Arrays.Leg();\n"
 
-                + "  bar.Arrays2.Leg leg2a = new bar.Arrays2.Leg();\n" + "  Leg leg2b = new bar.Arrays2.Leg();\n" + "}";
+                + "  bar.Arrays2.Leg leg2a = new bar.Arrays2.Leg();\n"
+                + "  Leg leg2b = new bar.Arrays2.Leg();\n"
+                + "}";
         String lib = "package bar; public class Arrays { public static class Leg {} }";
         String lib2 = "package bar; public class Arrays2 { public static class Leg {} }";
         CompilationUnit cu = run(code, lib, lib2);
@@ -2332,7 +2391,8 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testMethodCallsWithDynamicArgsResolution() throws Exception {
         String causeOfInterruption = "public class CauseOfInterruption{}";
         String result = "public class Result{}";
-        String code = "public class Executor{ " + "public void interrupt(Result result){}"
+        String code = "public class Executor{ "
+                + "public void interrupt(Result result){}"
                 + "private void interrupt(Result result, boolean forShutdown, CauseOfInterruption... causes) {} "
                 + "private void interrupt(Result result, boolean forShutdown) {} "
                 + "public void interrupt(Result result, CauseOfInterruption... causes) {interrupt(result, true, causes);}"
@@ -2367,9 +2427,9 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testReflectionCastOperation() throws Exception {
-        CompilationUnit cu = run(
-                "public class GroupRole extends GroupObject{ public static void isGroupRole(GroupObject o){} public void foo(GroupObject o) {GroupRole.isGroupRole(GroupObject.class.cast(o));}}",
-                "public class GroupObject{}");
+        CompilationUnit cu =
+                run("public class GroupRole extends GroupObject{ public static void isGroupRole(GroupObject o){} public void foo(GroupObject o) {GroupRole.isGroupRole(GroupObject.class.cast(o));}}",
+                        "public class GroupObject{}");
         MethodDeclaration md = (MethodDeclaration) cu.getTypes().get(0).getMembers().get(1);
         ExpressionStmt expr = (ExpressionStmt) md.getBody().getStmts().get(0);
         MethodCallExpr mce = (MethodCallExpr) expr.getExpression();
@@ -2448,9 +2508,9 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testErrorWithStaticAndNotStaticImports() throws Exception {
-        CompilationUnit cu = run(
-                "package bar; import static foo.SomeInterface.Inner1; import foo.SomeInterface;  public class Importer{ public static String foo(SomeInterface.Inner1 v) {return v.toString();} public static String bar(Inner1 v) { return v.toString(); } }",
-                "package foo; public interface SomeInterface { static enum Inner1 { A,B; } }");
+        CompilationUnit cu =
+                run("package bar; import static foo.SomeInterface.Inner1; import foo.SomeInterface;  public class Importer{ public static String foo(SomeInterface.Inner1 v) {return v.toString();} public static String bar(Inner1 v) { return v.toString(); } }",
+                        "package foo; public interface SomeInterface { static enum Inner1 { A,B; } }");
 
         Assert.assertNotNull(cu);
     }
@@ -2469,10 +2529,9 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
 
     @Test
     public void testForwardInheritanceBetweenStaticInnerClasses() throws Exception {
-   		/*
-   		 * Bug description:
-   		 * while resolving "this" of "Derived" scope the "Base" scope is used via LoadMethodDeclarationAction
-         * but the "Base" scope did not get a "this" symbol yet.
+        /*
+         * Bug description: while resolving "this" of "Derived" scope the "Base" scope is used via
+         * LoadMethodDeclarationAction but the "Base" scope did not get a "this" symbol yet.
          */
         final CompilationUnit cu = run(""
                 + "public class A {\n"
@@ -2482,23 +2541,17 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + " private abstract static class Base {\n"
                 + "  abstract public String get();\n"
                 + " }\n"
-                + "}\n"
-        );
-        AstAssertions.assertThat(cu)
-                .types().item(0)
-                .members().item(1).asClassOrInterfaceDeclaration()
-                .hasName("Base")
-                .members().item(0).asMethodDeclaration()
-                .symbolData().asMethodSymbolData()
-                .method().hasToString("public abstract java.lang.String A$Base.get()");
+                + "}\n");
+        AstAssertions.assertThat(cu).types().item(0).members().item(1).asClassOrInterfaceDeclaration().hasName("Base")
+                .members().item(0).asMethodDeclaration().symbolData().asMethodSymbolData().method()
+                .hasToString("public abstract java.lang.String A$Base.get()");
     }
 
     @Test
     public void testForwardExtendingBetweenInnerInterfaces() throws Exception {
         /*
-         * Bug description:
-         * while resolving "this" of "Derived" scope the "Base" scope is used via LoadMethodDeclarationAction
-         * but the "Base" scope did not get a "this" symbol yet.
+         * Bug description: while resolving "this" of "Derived" scope the "Base" scope is used via
+         * LoadMethodDeclarationAction but the "Base" scope did not get a "this" symbol yet.
          */
         CompilationUnit cu = run(""
                 + "public class A {\n"
@@ -2509,21 +2562,13 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + " public interface Stringifier<T> {\n"
                 + "  Object stringify(T o);\n"
                 + " }\n"
-                + "}\n"
-        );
-        AstAssertions.assertThat(cu)
-                .types().item(0)
-                .members().item(0).asClassOrInterfaceDeclaration()
-                .hasName("StringifierRegistry")
-                .members().item(0).asMethodDeclaration()
-                .symbolData().asMethodSymbolData()
-                .method().hasToString("public abstract java.lang.Object A$StringifierRegistry.stringify(java.lang.Object)");
-        AstAssertions.assertThat(cu)
-                .types().item(0)
-                .members().item(1).asClassOrInterfaceDeclaration()
-                .hasName("Stringifier")
-                .members().item(0).asMethodDeclaration()
-                .symbolData().asMethodSymbolData()
+                + "}\n");
+        AstAssertions.assertThat(cu).types().item(0).members().item(0).asClassOrInterfaceDeclaration()
+                .hasName("StringifierRegistry").members().item(0).asMethodDeclaration().symbolData()
+                .asMethodSymbolData().method()
+                .hasToString("public abstract java.lang.Object A$StringifierRegistry.stringify(java.lang.Object)");
+        AstAssertions.assertThat(cu).types().item(0).members().item(1).asClassOrInterfaceDeclaration()
+                .hasName("Stringifier").members().item(0).asMethodDeclaration().symbolData().asMethodSymbolData()
                 .method().hasToString("public abstract java.lang.Object A$Stringifier.stringify(java.lang.Object)");
     }
 
@@ -2537,18 +2582,15 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
     public void testTypeOfGenericConstant() throws Exception {
         CompilationUnit cu = run(genericColumnAccessor);
 
-        final FieldDeclarationAssert field =
-                assertThat(cu).types().item(0).members().item(0).asFieldDeclaration();
+        final FieldDeclarationAssert field = assertThat(cu).types().item(0).members().item(0).asFieldDeclaration();
 
         field.fieldsSymbolData().item(0).hasToString("apkg.Column<java.lang.Long>");
         field.type().hasToString("Column<Long>");
 
-        field.variables().item(0).expression().asObjectCreationExpr()
-                .type().hasToString("Column<Long>")
-                .symbolData().asSymbolType().parameterizedTypes().item(0).hasToString("java.lang.Long");
+        field.variables().item(0).expression().asObjectCreationExpr().type().hasToString("Column<Long>").symbolData()
+                .asSymbolType().parameterizedTypes().item(0).hasToString("java.lang.Long");
 
-        field.isFinal(true).isStatic(true).isPublic(true)
-                .fieldsSymbolData().item(0).parameterizedTypes().item(0)
+        field.isFinal(true).isStatic(true).isPublic(true).fieldsSymbolData().item(0).parameterizedTypes().item(0)
                 .asSymbolType().hasToString("java.lang.Long");
     }
 
@@ -2564,9 +2606,9 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + "}\n";
         CompilationUnit cu = run(code, genericColumnAccessor);
 
-        final MethodCallExprAssert call = assertThat(cu).types().item(0).members().item(0)
-                .asMethodDeclaration().body().stmts().item(0).asExpressionStmt().expression()
-                .asVariableDeclarationExpr().vars().item(0).expression().asMethodCallExpr();
+        final MethodCallExprAssert call = assertThat(cu).types().item(0).members().item(0).asMethodDeclaration().body()
+                .stmts().item(0).asExpressionStmt().expression().asVariableDeclarationExpr().vars().item(0).expression()
+                .asMethodCallExpr();
 
         call.args().item(0).asNameExpr().symbolData().asSymbolType().hasToString("apkg.Column<java.lang.Long>");
         call.symbolData().asSymbolType().hasToString("java.lang.Long");
@@ -2585,15 +2627,13 @@ public class SymbolVisitorAdapterTest extends SymbolVisitorAdapterTestSupport {
                 + "}\n";
         CompilationUnit cu = run(code, genericColumnAccessor);
 
-        final BlockStmtAssert body =
-                assertThat(cu).types().item(0).members().item(0).asMethodDeclaration().body();
+        final BlockStmtAssert body = assertThat(cu).types().item(0).members().item(0).asMethodDeclaration().body();
         final VariableDeclarationExprAssert varDecl =
                 body.stmts().item(0).asExpressionStmt().expression().asVariableDeclarationExpr();
         varDecl.type().symbolData().hasToString("long");
         varDecl.vars().item(0).expression().asIntegerLiteralExpr().hasValue(0);
 
-        body.stmts().item(1).asExpressionStmt().expression()
-                .asAssignExpr().value().asMethodCallExpr().symbolData().asMethodSymbolData()
-                .method().hasToString("public static long java.lang.Math.max(long,long)");
+        body.stmts().item(1).asExpressionStmt().expression().asAssignExpr().value().asMethodCallExpr().symbolData()
+                .asMethodSymbolData().method().hasToString("public static long java.lang.Math.max(long,long)");
     }
 }

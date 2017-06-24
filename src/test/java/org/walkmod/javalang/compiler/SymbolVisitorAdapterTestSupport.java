@@ -1,10 +1,10 @@
 package org.walkmod.javalang.compiler;
 
+import java.util.HashMap;
+
 import org.walkmod.javalang.ast.CompilationUnit;
 import org.walkmod.javalang.compiler.symbols.SymbolVisitorAdapter;
 import org.walkmod.javalang.test.SemanticTest;
-
-import java.util.HashMap;
 
 public class SymbolVisitorAdapterTestSupport extends SemanticTest {
 

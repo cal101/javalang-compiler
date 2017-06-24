@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -39,11 +39,11 @@ import org.walkmod.javalang.ast.ConstructorSymbolData;
 import org.walkmod.javalang.ast.FieldSymbolData;
 import org.walkmod.javalang.ast.MethodSymbolData;
 import org.walkmod.javalang.ast.SymbolData;
+import org.walkmod.javalang.compiler.JavaLangCompilerContracts;
 import org.walkmod.javalang.compiler.reflection.ClassInspector;
 import org.walkmod.javalang.compiler.types.TypeNotFoundException;
 import org.walkmod.javalang.compiler.types.Types;
 import org.walkmod.javalang.compiler.types.TypesLoaderVisitor;
-import org.walkmod.javalang.compiler.JavaLangCompilerContracts;
 import org.walkmod.javalang.exceptions.InvalidTypeException;
 
 import static java.util.Arrays.asList;
@@ -51,13 +51,10 @@ import static java.util.Arrays.asList;
 public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData, ConstructorSymbolData {
 
     /**
-     * Marker to aid symbol resolution.
-     * Incomplete, avoid making public.
+     * Marker to aid symbol resolution. Incomplete, avoid making public.
      */
     private enum Marker {
-        None,
-        AnonymousClass,
-        EnumConstantClass,
+        None, AnonymousClass, EnumConstantClass,
         /**
          * @see {@link #markDisabledCode()}
          */
@@ -274,7 +271,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                     return aux;
                 }
                 return null;
-
             }
         }
         return parameterizedTypes;
@@ -282,8 +278,8 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
     public void setParameterizedTypes(List<SymbolType> parameterizedTypes) {
         /*
-           this invariant is considered to be correct but some code needs to be fixed that
-           breaks the invariant before general use.
+         * this invariant is considered to be correct but some code needs to be fixed that breaks
+         * the invariant before general use.
          */
         if (JavaLangCompilerContracts.CHECK_EXPERIMENTAL_INVARIANT_ENABLED) {
             if (parameterizedTypes != null) {
@@ -291,19 +287,25 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 if (clazz != null) {
                     final TypeVariable<? extends Class<?>>[] tps = clazz.getTypeParameters();
                     if (tps.length != parameterizedTypes.size()) {
-                        throw new IllegalArgumentException("[" + this + "]: symbol type invariant violation"
-                            + "\n    # of type arguments (" + parameterizedTypes.size() + ")"
-                                + " does not match # of type parameters (" + tps.length + ")"
-                                + "\n        args  : " + parameterizedTypes
-                                + "\n        params: " + asList(tps)
-                        );
+                        throw new IllegalArgumentException("["
+                                + this
+                                + "]: symbol type invariant violation"
+                                + "\n    # of type arguments ("
+                                + parameterizedTypes.size()
+                                + ")"
+                                + " does not match # of type parameters ("
+                                + tps.length
+                                + ")"
+                                + "\n        args  : "
+                                + parameterizedTypes
+                                + "\n        params: "
+                                + asList(tps));
                     }
                 }
             }
         }
-        this.parameterizedTypes = parameterizedTypes != null
-                ? Collections.unmodifiableList(new ArrayList<>(parameterizedTypes))
-                : null;
+        this.parameterizedTypes =
+                parameterizedTypes != null ? Collections.unmodifiableList(new ArrayList<>(parameterizedTypes)) : null;
     }
 
     public int getArrayCount() {
@@ -423,7 +425,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                             }
                         }
                     }
-
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -447,9 +448,7 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                         isCompatible = Types.isCompatible(itBounds.next(), getClazz());
                     }
                 }
-
             }
-
         }
         return isCompatible;
     }
@@ -485,7 +484,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 }
                 isCompatible = found;
             }
-
         }
         return isCompatible;
     }
@@ -497,9 +495,10 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
             if (other != null) {
 
-                isCompatible = isUpperBoundsCompatible(other) && isLowerBoundsCompatible(other)
-                        && isParameterizedTypesCompatible(other) && isArrayCountCompatible(other);
-
+                isCompatible = isUpperBoundsCompatible(other)
+                        && isLowerBoundsCompatible(other)
+                        && isParameterizedTypesCompatible(other)
+                        && isArrayCountCompatible(other);
             }
 
         } else {
@@ -511,8 +510,8 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     }
 
     /**
-     * Is symbol for anonymous class that has been either being loaded successfully
-     * or being detected as disabled code on load?
+     * Is symbol for anonymous class that has been either being loaded successfully or being
+     * detected as disabled code on load?
      */
     public boolean isLoadedAnonymousClass() {
         return marker == Marker.AnonymousClass || marker == Marker.DisabledAnonymousClass;
@@ -525,7 +524,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             } catch (ClassNotFoundException e) {
                 throw new TypeNotFoundException("Error resolving the class for " + name, e.getCause());
             }
-
         }
         return clazz;
     }
@@ -585,7 +583,8 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     }
 
     public SymbolType cloneAsTypeVariable(String typeVariable) {
-        return clone(marker, name != null ? name : name(upperBounds, lowerBounds), arrayCount, typeVariable, null, null);
+        return clone(marker, name != null ? name : name(upperBounds, lowerBounds), arrayCount, typeVariable, null,
+                null);
     }
 
     public static SymbolType cloneAsArrayOrNull(/* Nullable */ SymbolType type, final int arrayCount) {
@@ -601,9 +600,9 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     }
 
     /**
-     * If code is disabled via conditional compilation the symbol information
-     * is typically incomplete because no class has been created.
-     * (For conditional compilation see JLS 14.21. Unreachable Statements,
+     * If code is disabled via conditional compilation the symbol information is typically
+     * incomplete because no class has been created. (For conditional compilation see JLS 14.21.
+     * Unreachable Statements,
      * http://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html#jls-14.21)
      */
     public SymbolType markDisabledCode() {
@@ -613,13 +612,12 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
         return clone(Marker.DisabledAnonymousClass, name, arrayCount, typeVariable, null, null);
     }
 
-
     private SymbolType clone(final Stack<SymbolType> parent, final Stack<SymbolType> created) {
         return clone(marker, name, arrayCount, typeVariable, parent, created);
     }
 
     private SymbolType clone(final Marker marker, final String name, final int arrayCount, final String typeVariable,
-                             Stack<SymbolType> parent, Stack<SymbolType> created) {
+            Stack<SymbolType> parent, Stack<SymbolType> created) {
         SymbolType result = new SymbolType(marker, name);
         result.setClazz(clazz);
         result.setArrayCount(arrayCount);
@@ -687,9 +685,7 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             }
 
             valueOf(typeParam, ref, auxMap, typeMapping);
-
         }
-
     }
 
     private SymbolType getParameterizedType(String variableName, Set<SymbolType> visited) {
@@ -721,7 +717,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                             if (elem != null) {
                                 result = elem;
                             }
-
                         }
                     }
                     return result;
@@ -731,7 +726,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             return null;
         }
     }
-
 
     /**
      * Build symbol representing an anonymous class.
@@ -799,19 +793,15 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     }
 
     /**
-    * Builds a symbol type from a Java type.
-    *
-    * @param type
-    *           type to convert
-    * @param arg
-    *           reference class to take into account if the type is a generic variable.
-    * @param updatedTypeMapping
-    *           place to put the resolved generic variables.
-    * @param typeMapping
-    *           reference type mapping for generic variables.
-    * @return the representative symbol type
-    * @throws InvalidTypeException
-    */
+     * Builds a symbol type from a Java type.
+     *
+     * @param type type to convert
+     * @param arg reference class to take into account if the type is a generic variable.
+     * @param updatedTypeMapping place to put the resolved generic variables.
+     * @param typeMapping reference type mapping for generic variables.
+     * @return the representative symbol type
+     * @throws InvalidTypeException
+     */
     public static SymbolType valueOf(Type type, SymbolType arg, Map<String, SymbolType> updatedTypeMapping,
             Map<String, SymbolType> typeMapping) throws InvalidTypeException {
         if (typeMapping == null) {
@@ -831,7 +821,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             returnType = valueOfWildcardType((WildcardType) type, arg, updatedTypeMapping, typeMapping);
         }
         return returnType;
-
     }
 
     private static SymbolType valueOfClass(Class<?> type, SymbolType arg, Map<String, SymbolType> updatedTypeMapping,
@@ -858,7 +847,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 parameterizedTypes = arg.getParameterizedTypes();
                 if (parameterizedTypes != null) {
                     it = parameterizedTypes.iterator();
-
                 }
                 List<Type> implementations = ClassInspector.getInterfaceOrSuperclassImplementations(argClass, aux);
 
@@ -906,7 +894,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                         }
                     }
                 }
-
             }
             if (!isParameterizedImplementation) {
 
@@ -940,7 +927,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                         params.add(returnType);
                     }
                 }
-
             }
             if (!params.isEmpty()) {
                 returnType.setParameterizedTypes(params);
@@ -966,7 +952,8 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
 
                 Class<?> argClazz = arg.getClazz();
 
-                if (returnType != null && argClazz != null
+                if (returnType != null
+                        && argClazz != null
                         && argClazz.getName().equals(returnType.getClazz().getName())) {
 
                     arg = returnType;
@@ -1108,7 +1095,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                     }
 
                     params.add(st);
-
                 }
 
                 i++;
@@ -1155,7 +1141,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             if (upperBounds.isEmpty()) {
                 upperBounds = null;
             }
-
         }
         types = wt.getLowerBounds();
         if (types != null && types.length > 0) {
@@ -1166,7 +1151,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 if (st != null) {
                     lowerBounds.add(st);
                 }
-
             }
             if (lowerBounds.isEmpty()) {
                 lowerBounds = null;
@@ -1182,7 +1166,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
     public static SymbolType valueOf(Type type, Map<String, SymbolType> typeMapping) throws InvalidTypeException {
 
         return valueOf(type, null, new HashMap<String, SymbolType>(), typeMapping);
-
     }
 
     public Method getMethod() {
@@ -1303,7 +1286,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
             for (SymbolType bound : lowerBounds) {
                 upperBoundClasses.add(bound.getClazz());
             }
-
         }
         return upperBoundClasses;
     }
@@ -1323,7 +1305,6 @@ public class SymbolType implements SymbolData, MethodSymbolData, FieldSymbolData
                 aux.setParameterizedTypes(parameterizedTypes);
             } else {
                 aux = this;
-
             }
             return aux;
         }

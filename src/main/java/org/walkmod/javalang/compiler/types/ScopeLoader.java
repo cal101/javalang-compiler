@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -116,7 +116,6 @@ public class ScopeLoader extends GenericVisitorAdapter<Scope, SymbolTable> {
     public Scope visit(ClassOrInterfaceDeclaration n, SymbolTable symbolTable) {
 
         return process(n, symbolTable);
-
     }
 
     @Override
@@ -158,8 +157,12 @@ public class ScopeLoader extends GenericVisitorAdapter<Scope, SymbolTable> {
                         symbolTable.pushSymbol("super", ReferenceType.VARIABLE, st, n, (List<SymbolAction>) null);
 
                 if (st == null) {
-                    throw new RuntimeException("Error resolving " + n.getType().toString() + " in " + n.toString()
-                            + ", line: " + n.getBeginLine());
+                    throw new RuntimeException("Error resolving "
+                            + n.getType().toString()
+                            + " in "
+                            + n.toString()
+                            + ", line: "
+                            + n.getBeginLine());
                 }
                 Class<?> superTypeClass = st.getClazz();
                 Symbol<?> superType = symbolTable.findSymbol(superTypeClass.getCanonicalName(), ReferenceType.TYPE);
@@ -198,7 +201,6 @@ public class ScopeLoader extends GenericVisitorAdapter<Scope, SymbolTable> {
                         process((TypeDeclaration) member, symbolTable);
                     }
                 }
-
             }
             symbolTable.popScope(true);
 
@@ -237,5 +239,4 @@ public class ScopeLoader extends GenericVisitorAdapter<Scope, SymbolTable> {
         symbolTable.popScope(true);
         return s.getInnerScope();
     }
-
 }

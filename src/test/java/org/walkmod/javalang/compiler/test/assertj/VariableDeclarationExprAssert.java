@@ -5,6 +5,7 @@ import org.walkmod.javalang.ast.expr.VariableDeclarationExpr;
 
 public class VariableDeclarationExprAssert
         extends AbstractExpressionAssert<VariableDeclarationExprAssert, VariableDeclarationExpr> {
+
     public VariableDeclarationExprAssert(VariableDeclarationExpr actual) {
         super(actual, VariableDeclarationExprAssert.class);
     }

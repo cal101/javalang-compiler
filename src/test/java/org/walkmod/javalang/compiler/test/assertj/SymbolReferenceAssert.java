@@ -2,6 +2,7 @@ package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.internal.Objects;
+
 import org.walkmod.javalang.ast.MethodSymbolData;
 import org.walkmod.javalang.ast.SymbolReference;
 
@@ -9,6 +10,7 @@ import static org.walkmod.javalang.compiler.test.assertj.AssertUtil.navigationDe
 
 public class SymbolReferenceAssert<S extends SymbolReferenceAssert<S, A>, A extends SymbolReference>
         extends AbstractObjectAssert<S, A> {
+
     private SymbolReferenceAssert(A actual, Class<?> selfType) {
         super(actual, selfType);
     }

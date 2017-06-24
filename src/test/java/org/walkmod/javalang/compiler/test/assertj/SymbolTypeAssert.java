@@ -2,9 +2,11 @@ package org.walkmod.javalang.compiler.test.assertj;
 
 import org.assertj.core.api.AbstractClassAssert;
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.compiler.symbols.SymbolType;
 
 public class SymbolTypeAssert extends SymbolDataAssert<SymbolTypeAssert, SymbolType> {
+
     public SymbolTypeAssert(SymbolType actual) {
         super(actual, SymbolTypeAssert.class);
     }

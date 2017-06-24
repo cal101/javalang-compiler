@@ -5,9 +5,9 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- *
  */
 public class TypesLoaderVisitorTest {
+
     @Test
     public void testRegistrationSymbolName() {
         assertName("A$B$Derived", "A.B.Derived");

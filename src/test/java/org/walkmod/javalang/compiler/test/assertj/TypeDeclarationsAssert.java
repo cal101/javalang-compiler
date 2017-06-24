@@ -1,9 +1,10 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
-import org.assertj.core.api.ListAssert;
-import org.walkmod.javalang.ast.body.TypeDeclaration;
-
 import java.util.List;
+
+import org.assertj.core.api.ListAssert;
+
+import org.walkmod.javalang.ast.body.TypeDeclaration;
 
 public class TypeDeclarationsAssert extends ListAssert<TypeDeclaration> {
 

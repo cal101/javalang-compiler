@@ -4,6 +4,7 @@ import org.walkmod.javalang.ast.body.ClassOrInterfaceDeclaration;
 
 public class ClassOrInterfaceDeclarationAssert
         extends AbstractTypeDeclarationAssert<ClassOrInterfaceDeclarationAssert, ClassOrInterfaceDeclaration> {
+
     ClassOrInterfaceDeclarationAssert(ClassOrInterfaceDeclaration actual) {
         super(actual, ClassOrInterfaceDeclarationAssert.class);
     }

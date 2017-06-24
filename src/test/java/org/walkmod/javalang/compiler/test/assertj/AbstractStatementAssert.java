@@ -9,6 +9,7 @@ import org.walkmod.javalang.ast.stmt.TypeDeclarationStmt;
 
 public class AbstractStatementAssert<S extends AbstractStatementAssert<S, A>, A extends Statement>
         extends AbstractNodeAssert<S, A> {
+
     AbstractStatementAssert(A actual, Class<?> selfType) {
         super(actual, selfType);
     }
@@ -23,8 +24,7 @@ public class AbstractStatementAssert<S extends AbstractStatementAssert<S, A>, A 
     }
 
     public BlockStmtAssert asBlockStmt() {
-        return AstAssertions.assertThat(asInstanceOf(BlockStmt.class))
-                .as(navigationDescription("(BlockStmt)"));
+        return AstAssertions.assertThat(asInstanceOf(BlockStmt.class)).as(navigationDescription("(BlockStmt)"));
     }
 
     public ExpressionStmtAssert asExpressionStmt() {
@@ -33,8 +33,7 @@ public class AbstractStatementAssert<S extends AbstractStatementAssert<S, A>, A 
     }
 
     public IfStmtAssert asIfStmt() {
-        return AstAssertions.assertThat(asInstanceOf(IfStmt.class))
-                .as(navigationDescription("(IfStmt)"));
+        return AstAssertions.assertThat(asInstanceOf(IfStmt.class)).as(navigationDescription("(IfStmt)"));
     }
 
     public ReturnStmtAssert asReturnStmt() {

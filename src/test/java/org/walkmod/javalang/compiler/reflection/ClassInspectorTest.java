@@ -1,7 +1,5 @@
 package org.walkmod.javalang.compiler.reflection;
 
-import org.junit.Test;
-
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -11,18 +9,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
+
 import static java.util.Arrays.asList;
+
 import static org.junit.Assert.assertEquals;
 
 public class ClassInspectorTest {
 
-    public static abstract class ImmutableSet<E>
-            extends AbstractCollection<E>
-            implements Serializable, Set<E>, Collection<E> {}
-    
-    public static abstract class MySet<E> implements Set<E>, Collection<E> {}
+    public static abstract class ImmutableSet<E> extends AbstractCollection<E>
+            implements Serializable, Set<E>, Collection<E> {
+    }
 
-    public static abstract class MySet2<E> implements Collection<E>, Set<E> {}
+    public static abstract class MySet<E> implements Set<E>, Collection<E> {
+    }
+
+    public static abstract class MySet2<E> implements Collection<E>, Set<E> {
+    }
 
     @Test
     public void testIntersectionOfRawTypes() throws Exception {
@@ -46,19 +49,18 @@ public class ClassInspectorTest {
         // primitives
         assertIntersection("[interface java.io.Serializable, interface java.lang.Comparable]", int.class, String.class);
         assertIntersection("[class java.lang.Double]", int.class, double.class);
-        assertIntersection("[interface java.io.Serializable, interface java.lang.Comparable]", int.class, boolean.class);
+        assertIntersection("[interface java.io.Serializable, interface java.lang.Comparable]", int.class,
+                boolean.class);
     }
 
     @Test
     public void testIntersectionOfRawTypeLists() throws Exception {
         assertIntersection("[interface java.util.Set, interface java.io.Serializable]",
-                "[interface java.util.Set, interface java.io.Serializable]",
-                asList(Set.class, Serializable.class),
+                "[interface java.util.Set, interface java.io.Serializable]", asList(Set.class, Serializable.class),
                 Arrays.<Class<?>>asList(HashSet.class));
         assertIntersection("[interface java.util.Collection, interface java.io.Serializable]",
                 "[interface java.util.Collection, interface java.io.Serializable]",
-                asList(List.class, Serializable.class),
-                Arrays.<Class<?>>asList(HashSet.class));
+                asList(List.class, Serializable.class), Arrays.<Class<?>>asList(HashSet.class));
     }
 
     private static void assertIntersection(String expected, final Class<?> clazz1, final Class<?> clazz2) {
@@ -70,8 +72,8 @@ public class ClassInspectorTest {
         assertEquals(expected2, ClassInspector.intersectRawTypes(clazz2, clazz1).toString());
     }
 
-    private static void assertIntersection(String expected1, String expected2,
-                                           List<Class<?>> classes1, List<Class<?>> classes2) {
+    private static void assertIntersection(String expected1, String expected2, List<Class<?>> classes1,
+            List<Class<?>> classes2) {
         assertEquals(expected1, ClassInspector.intersectRawTypes(classes1, classes2).toString());
         assertEquals(expected2, ClassInspector.intersectRawTypes(classes2, classes1).toString());
     }

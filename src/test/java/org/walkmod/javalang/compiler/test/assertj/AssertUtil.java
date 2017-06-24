@@ -1,11 +1,12 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
+import java.util.List;
+
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.util.Strings;
 
-import java.util.List;
-
 class AssertUtil {
+
     private static final String ASSERT = "Assert";
 
     /**

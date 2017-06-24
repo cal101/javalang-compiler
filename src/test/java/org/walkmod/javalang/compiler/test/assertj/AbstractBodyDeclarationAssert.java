@@ -8,6 +8,7 @@ import org.walkmod.javalang.ast.body.MethodDeclaration;
 
 public class AbstractBodyDeclarationAssert<S extends AbstractBodyDeclarationAssert<S, A>, A extends BodyDeclaration>
         extends AbstractNodeAssert<S, A> {
+
     AbstractBodyDeclarationAssert(A actual, Class<?> selfType) {
         super(actual, selfType);
     }

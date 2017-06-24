@@ -1,17 +1,18 @@
 package org.walkmod.javalang.compiler.test.assertj;
 
+import java.lang.reflect.Modifier;
+
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
+
 import org.walkmod.javalang.ast.FieldSymbolData;
 import org.walkmod.javalang.ast.body.FieldDeclaration;
 import org.walkmod.javalang.ast.body.VariableDeclarator;
 
-import java.lang.reflect.Modifier;
-
 /**
- *
  */
 public class FieldDeclarationAssert extends AbstractNodeAssert<FieldDeclarationAssert, FieldDeclaration> {
+
     public FieldDeclarationAssert(FieldDeclaration actual) {
         super(actual, FieldDeclarationAssert.class);
     }

@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -55,7 +55,6 @@ public class LoadTypeDeclarationsAction extends SymbolAction {
                 node.accept(vis, null);
             }
         }
-
     }
 
     private class LoadInheritedNestedClasses<A> extends VoidVisitorAdapter<A> {
@@ -71,7 +70,6 @@ public class LoadTypeDeclarationsAction extends SymbolAction {
             loadExtendsOrImplements(n.getExtends());
             loadExtendsOrImplements(n.getImplements());
             n.accept(typeTable, null);
-
         }
 
         @Override
@@ -125,15 +123,15 @@ public class LoadTypeDeclarationsAction extends SymbolAction {
                                     boolean add = aux == null;
                                     if (!add) {
                                         Node oldLoc = aux.getLocation();
-                                        add = (oldLoc == null || !(oldLoc instanceof TypeDeclaration
-                                                || oldLoc instanceof ImportDeclaration));
+                                        add = (oldLoc == null
+                                                || !(oldLoc instanceof TypeDeclaration
+                                                        || oldLoc instanceof ImportDeclaration));
                                     }
 
                                     if (add) {
 
                                         symbolTable.pushSymbol(innerClass.getSimpleName(), ReferenceType.TYPE,
                                                 SymbolType.valueOf(innerClass, null), null);
-
                                     }
                                 } catch (InvalidTypeException e) {
                                     throw new RuntimeException(e);
@@ -144,6 +142,5 @@ public class LoadTypeDeclarationsAction extends SymbolAction {
                 }
             }
         }
-
     }
 }

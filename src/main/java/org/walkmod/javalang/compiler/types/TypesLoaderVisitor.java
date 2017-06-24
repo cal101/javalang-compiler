@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2015 Raquel Pau and Albert Coroleu.
- * 
+ *
  * Walkmod is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Walkmod is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License along with Walkmod. If
  * not, see <http://www.gnu.org/licenses/>.
  */
@@ -58,12 +58,11 @@ import org.walkmod.javalang.visitors.VoidVisitorAdapter;
 /**
  * Inserts into the symbol table the set of types that can be used from an specific class. These
  * types can be resolved through the package, import declarations or inner classes.
- * 
- * Each type is loaded into the symbol table for all possible simple names that can solve this type.
- * 
- * 
- * @author rpau
  *
+ * Each type is loaded into the symbol table for all possible simple names that can solve this type.
+ *
+ *
+ * @author rpau
  */
 public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
 
@@ -115,7 +114,6 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
         for (String defaultType : primitiveClasses.keySet()) {
             SymbolType st = new SymbolType(primitiveClasses.get(defaultType));
             symbolTable.pushSymbol(defaultType, ReferenceType.TYPE, st, null, actions);
-
         }
         for (String defaultType : defaultJavaLangClasses) {
 
@@ -125,17 +123,14 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
     }
 
     /**
-    * Infers the simple name to be pushed into the symbol table
-    * 
-    * @param name
-    *           full name of a given class
-    * @param imported
-    *           if it appears as an import declaration. It is important, because the simple name is
-    *           the part after the $ symbol if it is an inner class.
-    * @param importedInner
-    *           resolve name of nested inner class of import
-    * @return the simple name to be pushed into the symbol table
-    */
+     * Infers the simple name to be pushed into the symbol table
+     *
+     * @param name full name of a given class
+     * @param imported if it appears as an import declaration. It is important, because the simple
+     *        name is the part after the $ symbol if it is an inner class.
+     * @param importedInner resolve name of nested inner class of import
+     * @return the simple name to be pushed into the symbol table
+     */
     //@VisibleForTesting
     static String resolveSymbolName(final String name, final boolean imported, final boolean importedInner) {
         final int dot = name.lastIndexOf(".");
@@ -183,7 +178,6 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
 
         if (node instanceof SymbolDataAware<?>) {
             st = (SymbolType) ((SymbolDataAware<?>) node).getSymbolData();
-
         }
         if (st != null) {
             name = st.getName() + "$" + name;
@@ -262,10 +256,8 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
                     added = new Symbol(innerClassName, st, type, ReferenceType.TYPE, false, actions);
                     added.setInnerScope(oldSymbol.getInnerScope());
                     symbolTable.pushSymbol(added, true);
-
                 }
             }
-
         }
         if (added != null && !st.belongsToAnonymousClass()) {
             pushCanonicalName(added, st);
@@ -428,15 +420,13 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
 
                     symbolTable.pushSymbol(typeName, ReferenceType.TYPE, new SymbolType(typeName), id, actions, true);
                 }
-
             }
         }
-
     }
 
     /**
-    * @param importedInner {@link @see #resolveSymbolName}
-    */
+     * @param importedInner {@link @see #resolveSymbolName}
+     */
     private void loadNestedClasses(Class<?> clazz, boolean imported, Node node, final boolean importedInner) {
         Class<?>[] innerClasses = clazz.getDeclaredClasses();
         if (innerClasses != null) {
@@ -448,7 +438,6 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
                             node, true);
                 }
             }
-
         }
     }
 
@@ -498,7 +487,6 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
             } catch (NoClassDefFoundError e) {
                 throw new RuntimeException("Ops!. Error loading " + name + ". Some missing runtime dependencies?", e);
             }
-
         }
     }
 
@@ -522,7 +510,6 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
                     if (pushedSymbol != null) {
                         loadNestedClasses(clazz, imported, node, false);
                     }
-
                 }
             } catch (ClassNotFoundException e1) {
                 int indexDot = internalName.indexOf(".");
@@ -546,8 +533,8 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
     }
 
     /**
-    * Note: only one of jarFile or jar is set
-    */
+     * Note: only one of jarFile or jar is set
+     */
     private void loadClassesFromJar(File jarFile, JarFile jar, String directory, Node node) {
         List<String> classNames = getClassNamesForJar(jarFile, jar, directory);
 
@@ -568,8 +555,8 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
     }
 
     /**
-    * Note: only one of jarFile or jar is set
-    */
+     * Note: only one of jarFile or jar is set
+     */
     private List<String> getClassNamesForJar(File jarFile, JarFile jar, String directory) {
         final String jarFilePath = jarFile != null ? jarFile.getPath() : jar.getName();
         final String key = jarFilePath + "@" + directory;
@@ -652,14 +639,12 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
                                 if (split.length == 1) {
                                     addType(name, false, node, actions);
                                 }
-
                             }
                         }
                     }
                 }
             }
         }
-
     }
 
     private boolean canRead(File file) {
@@ -777,5 +762,4 @@ public class TypesLoaderVisitor<T> extends VoidVisitorAdapter<T> {
         contextName = null;
         startingNode = null;
     }
-
 }
