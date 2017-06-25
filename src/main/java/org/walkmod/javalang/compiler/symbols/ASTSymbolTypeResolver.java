@@ -121,7 +121,7 @@ public class ASTSymbolTypeResolver extends GenericVisitorAdapter<SymbolType, Lis
             }
             if (!typeArgs.isEmpty()) {
                 result.setParameterizedTypes(typeArgs);
-            }               
+            }
         } else {
             if (result != null) {
                 result.setParameterizedTypes(null);
