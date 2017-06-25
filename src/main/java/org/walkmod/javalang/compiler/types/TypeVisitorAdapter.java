@@ -467,8 +467,8 @@ public class TypeVisitorAdapter<A extends Map<String, Object>> extends VoidVisit
                 if (scope == null // is static import
                         || methodScope.isCompatible(scope)) { // is a method
                     // inside the CU
-                    if (MethodInspector.isGeneric(m)) {
-//                    if (MethodInspector.isGeneric(m) && !isResolved(methodSymbol.getType())) {
+//                    if (MethodInspector.isGeneric(m)) {
+                    if (MethodInspector.isGeneric(m) && !isResolved(methodSymbol.getType())) {
                         // it is may return a parameterized type
                         if (scope == null) {
                             SymbolType st = symbolTable.getType("this", ReferenceType.VARIABLE);
